@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
 
+from ply import lex,yacc
+
 from . import lexer
-
-tokens = lexer.tokens
-
-class GrammarException(Exception):
-    pass
-
+from .exceptions import GrammarException
 
 def p_expression(p):
     """ expression : dml END
@@ -39,6 +36,10 @@ def p_dml(p):
 #     """
 #     p[0] = p[1]
 
+
+###################################################
+############         select            ############
+###################################################
 def p_select(p):
     """ select : SELECT columns FROM STRING where group_by having order_by limit
     """
@@ -106,10 +107,15 @@ def p_order(p):
     else:
         p[0] = 'ASC'
 
+
+
+
+
 # p[0] => [x,x..] | [x]
 def p_columns(p):
     """ columns : columns COMMA STRING
                 | STRING
+                | "*"
     """
     if len(p) == 2:
         p[0] = [p[1]]
@@ -151,10 +157,12 @@ def p_litem(p):
     p[0] = p[1]
 
 def p_ritem(p):
-    """ ritem : STRING
+    """ ritem : QSTRING
+              | STRING
               | NUMBER
     """
     p[0] = p[1]
+
 
 # empty return None
 # so expression like (t : empty) => len()==2
@@ -164,6 +172,17 @@ def p_empty(p):
 
 def p_error(p):
     raise GrammarException("Syntax error in input!")
+
+
+tokens = lexer.tokens
+
+DEBUG = True
+
+L = lex.lex(module=lexer, optimize=False, debug=DEBUG)
+P = yacc.yacc(debug=DEBUG)
+
+def parse_handle(sql):
+    return P.parse(input=sql,lexer=L,debug=DEBUG)
 
 
 
