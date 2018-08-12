@@ -132,14 +132,18 @@ def p_numbers(p):
         p[0] += [p[3]]
 
 def p_conditions(p):
-    """ conditions : conditions AND compare
-                   | conditions OR compare
+    """ conditions : conditions AND conditions
+                   | conditions OR conditions
+                   | "(" conditions ")"
                    | compare
     """
     if len(p) == 2:
         p[0] = [p[1]]
     else:
-        p[0] = p[1] + [p[2]] + [p[3]]
+        if '(' in p:
+            p[0] = [p[2]]
+        else:
+            p[0] = p[1] + [p[2]] + p[3]
 
 def p_compare(p):
     """ compare : litem COMPARISON ritem
