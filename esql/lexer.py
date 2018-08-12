@@ -33,8 +33,9 @@ reserved = {
     'like'  : 'LIKE',
     'between': 'BETWEEN',
     'null'  : 'NULL',
-    'count' :'COUNT',
-    'sum'   :'SUM',
+    'count' : 'COUNT',
+    'sum'   : 'SUM',
+    'avg'   : 'AVG'
 }
 
 tokens = (

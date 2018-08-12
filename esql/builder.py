@@ -29,7 +29,7 @@ class BuildSelect(object):
 
         self._dsl = {'query': {}}
 
-    def b_where(self):
+    def _b_where(self):
         if len(self._where) > 0:
             bools = []
             conds = []
@@ -39,18 +39,22 @@ class BuildSelect(object):
                 else:
                     conds.append(v)
 
-    def b_group(self):
+    def _b_group(self):
         pass
 
-    def b_having(self):
+    def _b_having(self):
         pass
 
-    def b_order(self):
+    def _b_order(self):
         pass
 
-    def b_limit(self):
+    def _b_limit(self):
         pass
 
 
     def build(self):
-        pass
+        self._b_where()
+        self._b_group()
+        self._b_having()
+        self._b_order()
+        self._b_limit()

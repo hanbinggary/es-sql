@@ -76,15 +76,15 @@ def p_having(p):
     """
     p[0] = []
     if len(p) > 2:
-        p[0] = p[3]
+        p[0] = p[2]
 
 def p_order_by(p):
     """ order_by : ORDER BY columns order
                  | empty
     """
-    p[0] = [{'value': [],'mode': ''}]
+    p[0] = [{'name': [],'mode': ''}]
     if len(p) > 2:
-        p[0][0]['value'] = p[3]
+        p[0][0]['name'] = p[3]
         p[0][0]['mode'] = p[4]
 
 
@@ -113,14 +113,33 @@ def p_order(p):
 
 # p[0] => [x,x..] | [x]
 def p_columns(p):
-    """ columns : columns COMMA STRING
-                | STRING
-                | "*"
+    """ columns : columns COMMA columns
+                | column
     """
-    if len(p) == 2:
-        p[0] = [p[1]]
+    if len(p) > 2:
+        p[0] = p[1] + p[3]
     else:
-        p[0] = p[1] + [p[3]]
+        p[0] = [p[1]]
+
+def p_column(p):
+    """ column : COUNT "(" item ")"
+               | SUM "(" STRING ")"
+               | AVG "(" STRING ")"
+               | item
+    """
+    p[0] = {'name' : p[1],'func' : ''}
+    if len(p) > 2:
+        p[0]['name'] = p[3]
+        p[0]['func'] = p[1]
+
+def p_item(p):
+    """ item : QSTRING
+             | STRING
+             | NUMBER
+             | "*"
+    """
+    p[0] = p[1]
+
 
 # p[0] => [1,2] | [1]
 def p_numbers(p):
@@ -130,6 +149,7 @@ def p_numbers(p):
     p[0] = [p[1]]
     if len(p) > 2:
         p[0] += [p[3]]
+
 
 def p_conditions(p):
     """ conditions : conditions AND conditions
@@ -146,26 +166,14 @@ def p_conditions(p):
             p[0] = p[1] + [p[2]] + p[3]
 
 def p_compare(p):
-    """ compare : litem COMPARISON ritem
-                | litem LIKE ritem
+    """ compare : column COMPARISON item
+                | column LIKE QSTRING
     """
     p[0] = {
         'left' : p[1],
         'right': p[3],
         'compare' : p[2]
     }
-
-def p_litem(p):
-    """ litem : STRING
-    """
-    p[0] = p[1]
-
-def p_ritem(p):
-    """ ritem : QSTRING
-              | STRING
-              | NUMBER
-    """
-    p[0] = p[1]
 
 
 # empty return None
