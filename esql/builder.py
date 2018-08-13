@@ -27,7 +27,7 @@ class BuildSelect(object):
         self._order = order
         self._limit = limit
 
-        self._dsl = {'query': {}}
+        self._dsl = {}
 
     def _b_where(self):
         if len(self._where) > 0:
@@ -46,10 +46,17 @@ class BuildSelect(object):
         pass
 
     def _b_order(self):
-        pass
+        _sorts = []
+        if len(self._order) > 0:
+            for sort in self._order:
+                k,v = sort['name'],sort['type']
+                _sorts.append(dict(k=v.lower()))
 
     def _b_limit(self):
-        pass
+        if len(self._limit) > 0:
+            _from, _size = self._limit
+            self._dsl['from'] = _from
+            self._dsl['size'] = _size
 
 
     def build(self):

@@ -79,13 +79,12 @@ def p_having(p):
         p[0] = p[2]
 
 def p_order_by(p):
-    """ order_by : ORDER BY columns order
+    """ order_by : ORDER BY order
                  | empty
     """
-    p[0] = [{'name': [],'mode': ''}]
+    p[0] = []
     if len(p) > 2:
-        p[0][0]['name'] = p[3]
-        p[0][0]['mode'] = p[4]
+        p[0] = p[3]
 
 
 def p_limit(p):
@@ -96,11 +95,19 @@ def p_limit(p):
     if len(p) > 2:
         p[0] = p[2]
 
-
 def p_order(p):
-    """ order : ASC
-              | DESC
-              | empty
+    """ order : order COMMA order
+              | string order_type
+    """
+    if len(p) > 3:
+        p[0] = p[1] + p[3]
+    else:
+        p[0] = [{'name': p[1],'type': p[2]}]
+
+def p_order_type(p):
+    """ order_type : ASC
+                   | DESC
+                   | empty
     """
     if p[1] == 'DESC':
         p[0] = 'DESC'
@@ -146,9 +153,26 @@ def p_numbers(p):
     """ numbers : NUMBER COMMA NUMBER
                 | NUMBER
     """
-    p[0] = [p[1]]
     if len(p) > 2:
-        p[0] += [p[3]]
+        p[0] = [p[1], p[3]]
+    else:
+        p[0] = [0, p[1]]
+
+def p_strings(p):
+    """ strings : strings COMMA strings
+                | string
+    """
+    if len(p) > 2:
+        p[0] = p[1] + p[3]
+    else:
+        p[0] = [p[1]]
+
+
+def p_string(p):
+    """ string : STRING
+               | QSTRING
+    """
+    p[0] = p[1]
 
 
 def p_conditions(p):
