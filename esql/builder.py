@@ -29,6 +29,8 @@ class BuildSelect(object):
 
         self._dsl = {}
 
+
+
     def _b_where(self):
         if len(self._where) > 0:
             bools = []
