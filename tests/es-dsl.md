@@ -48,3 +48,21 @@ url: _search/scroll
     "scroll" : "1m",
     "scroll_id" : "xxxx"
 }
+
+...
+
+## == != > < and or not etc
+
+{
+    "must":{"term":{"username":"cj"}} # and ==
+    "must_not":{"term":{"username":"cj"}} #and !=
+    "should":[
+        {"term":{"username":"cj"}},
+        {"term":{"username":"cj2"},
+        {"range":{"age":{"gt":"18"}}}}
+    ]       # or
+    "should":{
+        "wildcard":{"username":"*cj*"} # like
+    }
+}
+

@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from .common import Structure
+
 class BuildDSL(object):
     def __init__(self):
         self.dsl = {}
@@ -29,17 +31,11 @@ class BuildSelect(object):
 
         self._dsl = {}
 
-
-
     def _b_where(self):
-        if len(self._where) > 0:
-            bools = []
-            conds = []
-            for i, v in enumerate(self._where):
-                if i % 2 != 0:
-                    bools.append(v)
-                else:
-                    conds.append(v)
+        _struct = Structure()
+        _bool = {}
+        _struct.struct(self._where,_bool)
+        self._dsl['query'] = {'bool':_bool}
 
     def _b_group(self):
         pass
@@ -48,13 +44,13 @@ class BuildSelect(object):
         pass
 
 
-
     def _b_order(self):
-        _sorts = []
         if len(self._order) > 0:
+            _sorts = []
             for sort in self._order:
-                k,v = sort['name'],sort['type']
-                _sorts.append(dict(k=v.lower()))
+                k,v = sort['name'],sort['type'].lower()
+                _sorts.append({k:v})
+            self._dsl['sort'] = _sorts
 
     def _b_limit(self):
         if len(self._limit) > 0:

@@ -54,7 +54,7 @@ t_COMMA = r','
 t_ignore = ' \t\n'
 
 def t_STRING(t):
-    r"[a-zA-Z][a-zA-Z0-9]*"
+    r"[a-zA-Z][_a-zA-Z0-9]*"
     t.type = reserved.get(t.value.lower(), 'STRING')
     if t.type != 'STRING':
         t.value = t.value.upper()
