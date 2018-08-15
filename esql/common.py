@@ -12,58 +12,58 @@ class Structure(object):
     COMB = {
         'AND':'must',
         'OR':'should',
-        'NOT':'must_not'
+        'NOT':'must_not',
     }
 
     def __init__(self):
-        self._quere = ['AND']
+        self._quere = []
 
     def struct(self,conditions,query):
-        conds = [cond for cond in conditions[::2]]
-        combs = [comb for comb in conditions[1::2]]
-
-
-
-
-
-
+        still_or = True
+        if len(conditions) == 1:
+            self._quere.append('AND')
+        else:
+            self._quere.append(conditions[1])
 
         for condition in conditions:
             if isinstance(condition,str):
                 self._quere.append(condition)
-            if isinstance(condition,dict):
-                name,func,right,compare = self._pack_col(condition)
+            elif isinstance(condition,dict):
+                name,func,right,compare = self._unpack_col(condition)
                 comb_k = self._pop()
-                comb_v = Structure.COMB[comb_k]
                 if compare == 'LIKE':
                     right = right.replace('%', '*')
                     subquery = {'wildcard':{name:right}}
                 elif compare == '=':
                     subquery = {'term': {name: right}}
                 elif compare in ('<>','!='):
-                    subquery = {'must_not': {'term': {name: right}}}
+                    comb_k = 'NOT'
+                    subquery = {'term': {name: right}}
                 else:
                     comp = Structure.COMP[compare]
                     subquery = {'range':{name:{comp:right}}}
-                if query.get(comb_v):
-                    query[comb_v].append(subquery)
+                comb_v = Structure.COMB[comb_k]
+
+                temp = dict(**query)
+                query.clear()
+                if temp:
+                    query[comb_v] = [{'bool': temp}, subquery]
                 else:
                     query[comb_v] = [subquery]
-                print(query)
             else: # list need recurse
-                print(query)
                 comb_k = self._pop()
                 comb_v = Structure.COMB[comb_k]
-                recurse = []
-                if query.get(comb_v):
-                    query[comb_v].append(recurse)
+                recurse = {}
+                temp = dict(**query)
+                query.clear()
+                print(comb_v)
+                if temp:
+                    query[comb_v] = [{'bool': temp}, {'bool':recurse}]
                 else:
-                    query[comb_v] = recurse
-                query[comb_v] = []
-                self._quere.append('AND')
-                self.struct(condition,query[comb_v])
+                    query[comb_v] = [{'bool': recurse}]
+                self.struct(condition,recurse)
 
-    def _pack_col(self,col):
+    def _unpack_col(self,col):
         return (col['left']['name'],
                 col['left']['func'],
                 col['right'],
