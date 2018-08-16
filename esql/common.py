@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+from itertools import groupby
+
+from .model import Model
 
 class Structure(object):
     COMP = {
@@ -16,58 +19,52 @@ class Structure(object):
     }
 
     def __init__(self):
+        self._model = Model()
         self._quere = []
 
-    def struct(self,conditions,query):
-        still_or = True
-        if len(conditions) == 1:
-            self._quere.append('AND')
+    def struct(self,conditions,result):
+        if isinstance(conditions, list) and len(conditions) == 1:
+            conditions = conditions[0]
+        if 'OR' in conditions:
+            split_by_or = [list(g) for k, g in groupby(conditions, lambda x: x == 'OR') if not k]
+            for item in split_by_or:
+                temp = self._model.bool_query
+                if isinstance(item,list) and len(item)==1:
+                    item=item[0]
+                # print(self.struct(item, temp))
+                result['bool']['should'].append(self.struct(item,temp))
+        elif 'AND' in conditions:
+            split_by_and = [list(g) for k, g in groupby(conditions, lambda x: x == 'AND') if not k]
+            for item in split_by_and:
+                temp = self._model.bool_query
+                if isinstance(item,list) and len(item)==1:
+                    item=item[0]
+                result['bool']['must'].append(self.struct(item, temp))
         else:
-            self._quere.append(conditions[1])
+            subquery, comb = self._subquery(conditions, 'must')
+            result['bool'][comb].append(subquery)
+        return result
 
-        for condition in conditions:
-            if isinstance(condition,str):
-                self._quere.append(condition)
-            elif isinstance(condition,dict):
-                name,func,right,compare = self._unpack_col(condition)
-                comb_k = self._pop()
-                if compare == 'LIKE':
-                    right = right.replace('%', '*')
-                    subquery = {'wildcard':{name:right}}
-                elif compare == '=':
-                    subquery = {'term': {name: right}}
-                elif compare in ('<>','!='):
-                    comb_k = 'NOT'
-                    subquery = {'term': {name: right}}
-                else:
-                    comp = Structure.COMP[compare]
-                    subquery = {'range':{name:{comp:right}}}
-                comb_v = Structure.COMB[comb_k]
 
-                temp = dict(**query)
-                query.clear()
-                if temp:
-                    query[comb_v] = [{'bool': temp}, subquery]
-                else:
-                    query[comb_v] = [subquery]
-            else: # list need recurse
-                comb_k = self._pop()
-                comb_v = Structure.COMB[comb_k]
-                recurse = {}
-                temp = dict(**query)
-                query.clear()
-                print(comb_v)
-                if temp:
-                    query[comb_v] = [{'bool': temp}, {'bool':recurse}]
-                else:
-                    query[comb_v] = [{'bool': recurse}]
-                self.struct(condition,recurse)
+    def _subquery(self,cond,comb):
+        name, func, right, compare = cond['left']['name'],\
+                                     cond['left']['func'],\
+                                     cond['right'],\
+                                     cond['compare']
 
-    def _unpack_col(self,col):
-        return (col['left']['name'],
-                col['left']['func'],
-                col['right'],
-                col['compare'])
+        if compare == 'LIKE':
+            right = right.replace('%', '*')
+            subquery = {'wildcard':{name:right}}
+        elif compare == '=':
+            subquery = {'term': {name: right}}
+        elif compare in ('<>','!='):
+            comb = 'must_not'
+            subquery = {'term': {name: right}}
+        else:
+            comp = Structure.COMP[compare]
+            subquery = {'range':{name:{comp:right}}}
+        return subquery,comb
+
 
     def _pop(self):
         return self._quere.pop()

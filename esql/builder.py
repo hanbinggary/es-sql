@@ -33,9 +33,15 @@ class BuildSelect(object):
 
     def _b_where(self):
         _struct = Structure()
-        _bool = {}
-        _struct.struct(self._where,_bool)
-        self._dsl['query'] = {'bool':_bool}
+        _result = {
+            'bool':{
+                'must':[],
+                'should':[],
+                'must_not':[]
+            }
+        }
+        _bool=_struct.struct(self._where,_result)
+        self._dsl['query'] = _bool
 
     def _b_group(self):
         pass
