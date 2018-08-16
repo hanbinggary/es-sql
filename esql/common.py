@@ -20,31 +20,27 @@ class Structure(object):
 
     def __init__(self):
         self._model = Model()
-        self._quere = []
 
     def struct(self,conditions,result):
         if isinstance(conditions, list) and len(conditions) == 1:
             conditions = conditions[0]
-        if 'OR' in conditions:
-            split_by_or = [list(g) for k, g in groupby(conditions, lambda x: x == 'OR') if not k]
-            for item in split_by_or:
+        if 'OR' in conditions or 'AND' in conditions:
+            if 'OR' in conditions:
+                comb_k = 'OR'
+            else:
+                comb_k = 'AND'
+            comb_v = Structure.COMB[comb_k]
+            subconds = self._split_list(conditions,comb_k)
+            for subcond in subconds:
                 temp = self._model.bool_query
-                if isinstance(item,list) and len(item)==1:
-                    item=item[0]
-                # print(self.struct(item, temp))
-                result['bool']['should'].append(self.struct(item,temp))
-        elif 'AND' in conditions:
-            split_by_and = [list(g) for k, g in groupby(conditions, lambda x: x == 'AND') if not k]
-            for item in split_by_and:
-                temp = self._model.bool_query
-                if isinstance(item,list) and len(item)==1:
-                    item=item[0]
-                result['bool']['must'].append(self.struct(item, temp))
+                result['bool'][comb_v].append(self.struct(subcond,temp))
         else:
             subquery, comb = self._subquery(conditions, 'must')
             result['bool'][comb].append(subquery)
         return result
 
+    def _split_list(self,source,wd):
+        return [list(g) for k, g in groupby(source, lambda x: x == wd) if not k]
 
     def _subquery(self,cond,comb):
         name, func, right, compare = cond['left']['name'],\
@@ -64,7 +60,3 @@ class Structure(object):
             comp = Structure.COMP[compare]
             subquery = {'range':{name:{comp:right}}}
         return subquery,comb
-
-
-    def _pop(self):
-        return self._quere.pop()
