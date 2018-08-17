@@ -30,24 +30,21 @@ class BuildSelect(object):
         self._limit = limit
 
         self._dsl = {}
+        self._structure = Structure()
+
+    def _b_column(self):
+        self._structure.struct_column(self._column)
 
     def _b_where(self):
-        _struct = Structure()
-        _result = {
-            'bool':{
-                'must':[],
-                'should':[],
-                'must_not':[]
-            }
-        }
-        _bool=_struct.struct(self._where,_result)
-        self._dsl['query'] = _bool
+        if len(self._where) > 0:
+            _bool=self._structure.struct_where(self._where)
+            self._dsl['query'] = _bool
 
     def _b_group(self):
-        pass
-
-    def _b_having(self):
-        pass
+        if len(self._group) > 0:
+            aggs = {}
+            self._structure.struct_group(self._group,self._having,aggs)
+            self._dsl['aggs'] = aggs
 
 
     def _b_order(self):
@@ -66,8 +63,9 @@ class BuildSelect(object):
 
 
     def build(self):
+        self._b_column()
         self._b_where()
         self._b_group()
-        self._b_having()
+        # self._b_having()
         self._b_order()
         self._b_limit()

@@ -12,3 +12,10 @@ class Model(object):
             }
         }
         return m
+
+    @property
+    def aggs_query(self):
+        m = {
+            'aggs':{}
+        }
+        return m

@@ -35,7 +35,9 @@ reserved = {
     'null'  : 'NULL',
     'count' : 'COUNT',
     'sum'   : 'SUM',
-    'avg'   : 'AVG'
+    'avg'   : 'AVG',
+    'min'   : 'MIN',
+    'max'   : 'MAX'
 }
 
 tokens = (

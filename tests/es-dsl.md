@@ -66,3 +66,46 @@ url: _search/scroll
     }
 }
 
+...
+
+## group by
+
+{
+  "aggs": {
+    "group_by_state": {
+      "terms": {
+        "field": "state.keyword"
+      }
+    }
+  }
+}
+OR
+{
+  "aggs": {
+    "state": {
+      "terms": {
+        "field": "state"
+      },
+      "aggs": {
+        "name":{
+            "terms": {
+                "field":"name"
+            }
+        }
+      }
+    }
+  }
+}
+
+...
+
+## having
+
+{
+    "bucket_selector":{
+        "buckets_path":{
+            "val_100": "count"
+        },
+        "script": "(val_100 == 6862)"
+    }
+}

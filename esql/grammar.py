@@ -132,6 +132,8 @@ def p_column(p):
     """ column : COUNT "(" item ")"
                | SUM "(" STRING ")"
                | AVG "(" STRING ")"
+               | MIN "(" STRING ")"
+               | MAX "(" STRING ")"
                | item
     """
     p[0] = {'name' : p[1],'func' : ''}
