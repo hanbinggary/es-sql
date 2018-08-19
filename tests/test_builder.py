@@ -28,8 +28,8 @@ def test_builder():
     builder.build()
 
     print(builder._dsl)
-    print(builder._structure.func_columns)
-    print(builder._structure._show_columns)
+    # print(builder._structure.func_columns)
+    # print(builder._structure._show_columns)
 
 
 

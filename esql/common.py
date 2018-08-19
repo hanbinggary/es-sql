@@ -44,10 +44,18 @@ class Structure(object):
     def struct_group(self, groups,havings, aggs):
         group = groups.pop()
         name = group['name']
-        if len(groups) == 0 and len(havings)>0:
-            subaggs = {'having':{'bucket_selector':self.struct_having(havings)}}
-        else:
-            subaggs = {}
+        subaggs = {}
+        if len(groups) == 0:
+            if len(havings)>0:
+                subaggs['having'] = {'bucket_selector':self.struct_having(havings)}
+            for name,func in self.func_columns:
+                if name == '*':
+                    name = '_index'
+                metric_name = func+'_'+name
+                if func == 'count':
+                    func = 'value_count'
+                metric = {func:{'field':name}}
+                subaggs[metric_name] = metric
         aggs[name] = {
             'aggs':subaggs,
             'terms': {'field': name}
@@ -56,7 +64,7 @@ class Structure(object):
             self.struct_group(groups,havings,subaggs)
 
     def struct_having(self,havings):
-        selector = {'buckets_path':{},'script':''}
+        selector = self._model.selector_query
         for having in havings:
             if isinstance(having,dict):
                 name, func, right, compare = having['left']['name'], \
@@ -64,8 +72,8 @@ class Structure(object):
                                              having['right'], \
                                              having['compare']
                 path_value = func+'_'+name
-                if path_value not in self.func_columns:
-                    self.func_columns.append(path_value)
+                if (name,func) not in self.func_columns:
+                    self.func_columns.append((name,func))
                 path_name = 'val_'+path_value
                 selector['buckets_path'][path_name] = path_value
                 if compare == '=':
@@ -93,7 +101,7 @@ class Structure(object):
             func = column['func'].lower()
             if func:
                 n = '%s_%s'%(name,func)
-                self.func_columns.append(n)
+                self.func_columns.append((name,func))
                 self._show_columns.append(n)
             else:
                 self._show_columns.append(name)

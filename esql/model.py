@@ -15,7 +15,10 @@ class Model(object):
 
     @property
     def aggs_query(self):
-        m = {
-            'aggs':{}
-        }
+        m = {'aggs':{}}
+        return m
+
+    @property
+    def selector_query(self):
+        m = {'buckets_path':{},'script':''}
         return m
