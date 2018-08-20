@@ -19,7 +19,7 @@ class Structure(object):
     }
 
     def __init__(self):
-        self.func_columns = []
+        self._func_columns = []
         self._show_columns = []
         self._model = Model()
 
@@ -42,20 +42,13 @@ class Structure(object):
         return result
 
     def struct_group(self, groups,havings, aggs):
-        group = groups.pop()
+        group = groups.pop(0)
         name = group['name']
         subaggs = {}
         if len(groups) == 0:
             if len(havings)>0:
                 subaggs['having'] = {'bucket_selector':self.struct_having(havings)}
-            for name,func in self.func_columns:
-                if name == '*':
-                    name = '_index'
-                metric_name = func+'_'+name
-                if func == 'count':
-                    func = 'value_count'
-                metric = {func:{'field':name}}
-                subaggs[metric_name] = metric
+            self.struct_func_column(subaggs)
         aggs[name] = {
             'aggs':subaggs,
             'terms': {'field': name}
@@ -72,8 +65,8 @@ class Structure(object):
                                              having['right'], \
                                              having['compare']
                 path_value = func+'_'+name
-                if (name,func) not in self.func_columns:
-                    self.func_columns.append((name,func))
+                if (name,func) not in self._func_columns:
+                    self._func_columns.append((name,func))
                 path_name = 'val_'+path_value
                 selector['buckets_path'][path_name] = path_value
                 if compare == '=':
@@ -93,6 +86,16 @@ class Structure(object):
                 selector['script']+=' (%s) '%subhaving['script']
         return selector
 
+    def struct_func_column(self,aggs):
+        if len(self._func_columns) > 0:
+            for name,func in self._func_columns:
+                if name == '*':
+                    name = '_index'
+                metric_name = func+'_'+name
+                if func == 'count':
+                    func = 'value_count'
+                metric = {func:{'field':name}}
+                aggs[metric_name] = metric
 
 
     def struct_column(self,columns):
@@ -100,13 +103,13 @@ class Structure(object):
             name = column['name']
             func = column['func'].lower()
             if func:
-                n = '%s_%s'%(name,func)
-                self.func_columns.append((name,func))
-                self._show_columns.append(n)
+                self._func_columns.append((name,func))
+                self._show_columns.append((name,func))
             else:
                 self._show_columns.append(name)
-
-
+        if '*' in self._show_columns:
+            self._show_columns = []
+        return self._show_columns
 
     def _split_list(self,source,wd):
         return [list(g) for k, g in groupby(source, lambda x: x == wd) if not k]

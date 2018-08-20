@@ -3,14 +3,14 @@
 import json
 
 from esql import grammar
-from esql.builder import BuildSelect
+from esql.builder import SelectBuilder
 
 
 def test_builder():
     # sql = "select username,age from users where username like '%cj%' and age>'cj' group by name having count(*)>1 order by age ,username desc limit 10;"
-    # sql = 'select * from ipisevilip_lable where info_time = 12314  or info_from != "情报扩线";'
+    sql = "select count(subject),subject,srcip,dstip,max(srcport),min(dstport) from formattedlog where 'count' >= 112 and subject like '*HTTP_whisker_HEAD_*' and endtime>=1528019609000 and endtime<=1530611609000 group by subject,srcip,dstip,dstmac,dstport having COUNT(subject)=6862 or count(subject)=6801 and count(subject)=6862 and sum(srcport)<10 limit 1000;"
     # sql = 'select * from ipisevilip_lable where (info_time = 1533784175000 or info_time=1533797433000) and (info_time = 1533784175000 or info_time=1533797433000) or info_time like "15337974%" ;'
-    sql = 'select count(*),sum(name),max(age) from test group by name,age having sum(name)>1 and (avg(age)>5 or min(adf)<>123);'
+    # sql = 'select count(info_value) from evil_ip1 group by info_value,info_asdf;'
     build_list = grammar.parse_handle(sql)
 
     print(build_list)
@@ -23,11 +23,11 @@ def test_builder():
     order = build_list['order']
     limit = build_list['limit']
 
-    builder = BuildSelect('',column,table,where,group,having,order,limit)
+    builder = SelectBuilder(column,table,where,group,having,order,limit)
 
     builder.build()
 
-    print(builder._dsl)
+    print(json.dumps(builder._dsl))
     # print(builder._structure.func_columns)
     # print(builder._structure._show_columns)
 
