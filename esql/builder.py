@@ -23,6 +23,7 @@ class SelectBuilder(object):
 
     def _b_column(self):
         show_columns = self._structure.struct_column(self._column)
+        print(show_columns)
         _source = [i for i in show_columns if not isinstance(i,tuple)]
         self._dsl['_source'] = _source
 
@@ -34,7 +35,7 @@ class SelectBuilder(object):
     def _b_group(self):
         aggs = {}
         if len(self._group) > 0:
-            self._structure.struct_group(self._group,self._having,aggs)
+            self._structure.struct_group(self._group[:],self._having,aggs)
         else:
             self._structure.struct_func_column(aggs)
         if len(aggs) > 0:

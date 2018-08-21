@@ -63,7 +63,7 @@ def p_where(p):
         p[0] = p[2]
 
 def p_group_by(p):
-    """ group_by : GROUP BY columns
+    """ group_by : GROUP BY strings
                  | empty
     """
     p[0] = []
@@ -113,9 +113,6 @@ def p_order_type(p):
         p[0] = 'DESC'
     else:
         p[0] = 'ASC'
-
-
-
 
 
 # p[0] => [x,x..] | [x]

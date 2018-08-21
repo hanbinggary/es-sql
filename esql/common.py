@@ -42,8 +42,8 @@ class Structure(object):
         return result
 
     def struct_group(self, groups,havings, aggs):
-        group = groups.pop(0)
-        name = group['name']
+        name = groups.pop(0)
+        # name = group['name']
         subaggs = {}
         if len(groups) == 0:
             if len(havings)>0:
