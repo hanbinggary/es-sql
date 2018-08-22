@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 class Analyser(object):
-    def __init__(self,response,group,show_columns):
+    def __init__(self,response,group,column):
         self.response = response
         self.group = group
-        self.show_columns = show_columns
+        self.column = column
         self.result = []
 
     def hits_analyse(self):
@@ -40,12 +40,12 @@ class Analyser(object):
     def analyse(self):
         views = []
         need_aggs = False
-        for column in self.show_columns:
-            if isinstance(column,tuple):
-                views.append(('%s_%s'%column[::-1]))
+        for column in self.column:
+            if column['func']:
+                views.append(('%s_%s'%(column['func'],column['name'])))
                 need_aggs = True
             else:
-                views.append(column)
+                views.append(column['name'])
         if need_aggs:
             bucket = self.response['aggregations']
             if len(self.group) > 0:

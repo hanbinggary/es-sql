@@ -1,25 +1,37 @@
 # -*- coding: utf-8 -*-
 
+from elasticsearch import Elasticsearch
+
 from .grammar import parse_handle
 from .builder import SelectBuilder
+from .analyser import Analyser
 
 class ESQL(object):
 
-	def __init__(self,sql):
-		self._sql = sql
-		self._parse = parse_handle(self._sql)
-		self._dtype = self._parse['type']
-		if self._dtype == 'SELECT':
-			self._init_select_dsl()
+	def __init__(self,host):
+		self.es = Elasticsearch(host)
 
-	def _init_select_dsl(self):
-		column = self._parse['column']
-		table = self._parse['table']
-		where = self._parse['where']
-		group = self._parse['group']
-		having = self._parse['having']
-		order = self._parse['order']
-		limit = self._parse['limit']
-		self._dsl = SelectBuilder(column,table,
-								  where,group,
-								  having,order,limit).dsl
+	def _init_select_dsl(self,column,table,where,group,having,order,limit):
+		dsl = SelectBuilder(column,table,
+							where,group,
+							having,order,limit).dsl
+		return dsl
+
+	def execute(self,sql):
+		parse = parse_handle(sql)
+		dtype = parse['type']
+		if dtype == 'SELECT':
+			column = parse['column']
+			table = parse['table']
+			where = parse['where']
+			group = parse['group']
+			having = parse['having']
+			order = parse['order']
+			limit = parse['limit']
+			dsl_body = SelectBuilder(column, table,
+								where, group,
+								having, order, limit).dsl
+			response = self.es.search(index=table,body=dsl_body)
+			analyser = Analyser(response,group,column)
+			analyser.analyse()
+			return analyser.result

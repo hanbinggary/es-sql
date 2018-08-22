@@ -22,9 +22,7 @@ class SelectBuilder(object):
         self._structure = Structure()
 
     def _b_column(self):
-        show_columns = self._structure.struct_column(self._column)
-        print(show_columns)
-        _source = [i for i in show_columns if not isinstance(i,tuple)]
+        _source = self._structure.struct_column(self._column)
         self._dsl['_source'] = _source
 
     def _b_where(self):
@@ -45,7 +43,7 @@ class SelectBuilder(object):
         if len(self._order) > 0:
             _sorts = []
             for sort in self._order:
-                k,v = sort['name'],sort['type'].lower()
+                k,v = sort['name'],sort['type']
                 _sorts.append({k:v})
             self._dsl['sort'] = _sorts
 

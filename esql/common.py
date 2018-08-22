@@ -43,7 +43,6 @@ class Structure(object):
 
     def struct_group(self, groups,havings, aggs):
         name = groups.pop(0)
-        # name = group['name']
         subaggs = {}
         if len(groups) == 0:
             if len(havings)>0:
@@ -51,7 +50,8 @@ class Structure(object):
             self.struct_func_column(subaggs)
         aggs[name] = {
             'aggs':subaggs,
-            'terms': {'field': name}
+            # TODO size is not accurate
+            'terms': {'field': name,'size':'1000'}
         }
         if len(groups)>0:
             self.struct_group(groups,havings,subaggs)
@@ -61,7 +61,7 @@ class Structure(object):
         for having in havings:
             if isinstance(having,dict):
                 name, func, right, compare = having['left']['name'], \
-                                             having['left']['func'].lower(), \
+                                             having['left']['func'], \
                                              having['right'], \
                                              having['compare']
                 path_value = func+'_'+name
@@ -101,10 +101,9 @@ class Structure(object):
     def struct_column(self,columns):
         for column in columns:
             name = column['name']
-            func = column['func'].lower()
+            func = column['func']
             if func:
                 self._func_columns.append((name,func))
-                self._show_columns.append((name,func))
             else:
                 self._show_columns.append(name)
         if '*' in self._show_columns:

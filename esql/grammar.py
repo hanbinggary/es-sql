@@ -110,9 +110,9 @@ def p_order_type(p):
                    | empty
     """
     if p[1] == 'DESC':
-        p[0] = 'DESC'
+        p[0] = 'desc'
     else:
-        p[0] = 'ASC'
+        p[0] = 'asc'
 
 
 # p[0] => [x,x..] | [x]
@@ -136,7 +136,7 @@ def p_column(p):
     p[0] = {'name' : p[1],'func' : ''}
     if len(p) > 2:
         p[0]['name'] = p[3]
-        p[0]['func'] = p[1]
+        p[0]['func'] = p[1].lower()
 
 def p_item(p):
     """ item : QSTRING

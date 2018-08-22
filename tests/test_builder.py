@@ -7,10 +7,9 @@ from esql.builder import SelectBuilder
 
 
 def test_builder():
-    # sql = "select username,age from users where username like '%cj%' and age>'cj' group by name having count(*)>1 order by age ,username desc limit 10;"
     sql = "select count(subject),subject,srcip,dstip,max(srcport),min(dstport) from formattedlog where 'count' >= 112 and subject like '*HTTP_whisker_HEAD_*' and endtime>=1528019609000 and endtime<=1530611609000 group by subject,srcip,dstip,dstmac,dstport having COUNT(subject)=6862 or count(subject)=6801 and count(subject)=6862 and sum(srcport)<10 limit 1000;"
     # sql = 'select * from ipisevilip_lable where (info_time = 1533784175000 or info_time=1533797433000) and (info_time = 1533784175000 or info_time=1533797433000) or info_time like "15337974%" ;'
-    # sql = 'select count(info_value),count(info_time) from evil_ip1;'
+    # sql = 'select * from evil_ip1 where info_value = "103.216.216.145";'
     build_list = grammar.parse_handle(sql)
 
     print(build_list)
