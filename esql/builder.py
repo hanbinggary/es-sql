@@ -8,8 +8,9 @@ class Builder(object):
 
 
 class SelectBuilder(object):
-    def __init__(self,column=None, table=None, where=None,
+    def __init__(self,distinct=None, column=None, table=None, where=None,
                  group=None, having=None, order=None, limit=None):
+        self._distinct = distinct or 'N'
         self._column = column or []
         self._table = table or []
         self._where = where or []
@@ -21,9 +22,11 @@ class SelectBuilder(object):
         self._dsl = {}
         self._structure = Structure()
 
+        self._show_columns = []
+
     def _b_column(self):
-        _source = self._structure.struct_column(self._column)
-        self._dsl['_source'] = _source
+        self._show_columns = self._structure.struct_column(self._column)
+        self._dsl['_source'] = self._show_columns
 
     def _b_where(self):
         if len(self._where) > 0:
@@ -32,8 +35,11 @@ class SelectBuilder(object):
 
     def _b_group(self):
         aggs = {}
+        group = self._group[:]
+        if self._distinct == 'Y':
+            group = self._show_columns[:]
         if len(self._group) > 0:
-            self._structure.struct_group(self._group[:],self._having,aggs)
+            self._structure.struct_group(group,self._having,aggs)
         else:
             self._structure.struct_func_column(aggs)
         if len(aggs) > 0:
@@ -64,3 +70,6 @@ class SelectBuilder(object):
     def dsl(self):
         self.build()
         return self._dsl
+
+
+

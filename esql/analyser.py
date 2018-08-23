@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
 class Analyser(object):
-    def __init__(self,response,group,column):
+    def __init__(self,response,group,column,distinct):
         self.response = response
         self.group = group
         self.column = column
+        self.distinct = distinct
         self.result = []
 
     def hits_analyse(self):
@@ -29,7 +30,6 @@ class Analyser(object):
                     self.aggs_analyse(bk,views,data.copy(),group,count)
         else: # innermost bucket
             if len(bucket) > 0:
-                # bk = bucket[0]
                 data[pregroup] = bucket['key']
                 keys = [i for i in bucket if i not in ('key','doc_count')]
                 for key in keys:
@@ -40,12 +40,15 @@ class Analyser(object):
     def analyse(self):
         views = []
         need_aggs = False
+        if 'aggregations' in self.response:
+            need_aggs = True
         for column in self.column:
             if column['func']:
                 views.append(('%s_%s'%(column['func'],column['name'])))
-                need_aggs = True
             else:
                 views.append(column['name'])
+        if self.distinct == 'Y':
+            self.group = views[:]
         if need_aggs:
             bucket = self.response['aggregations']
             if len(self.group) > 0:
