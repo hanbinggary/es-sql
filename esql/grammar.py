@@ -148,6 +148,15 @@ def p_column(p):
         p[0]['name'] = p[3]
         p[0]['func'] = p[1].lower()
 
+def p_items(p):
+    """ items : items COMMA items
+              | item
+    """
+    if len(p) > 2:
+        p[0] = p[1] + p[3]
+    else:
+        p[0] = [p[1]]
+
 def p_item(p):
     """ item : QSTRING
              | STRING
@@ -201,12 +210,15 @@ def p_conditions(p):
 def p_compare(p):
     """ compare : column COMPARISON item
                 | column LIKE QSTRING
+                | column IN "(" items ")"
     """
     p[0] = {
         'left' : p[1],
         'right': p[3],
         'compare' : p[2]
     }
+    if len(p) > 4:
+        p[0]['right'] = p[4]
 
 
 # empty return None

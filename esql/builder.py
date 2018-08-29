@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import json
+
 from .common import Structure
 
 class Builder(object):
@@ -69,6 +71,7 @@ class SelectBuilder(object):
     @property
     def dsl(self):
         self.build()
+        print(json.dumps(self._dsl))
         return self._dsl
 
 

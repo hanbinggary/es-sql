@@ -9,13 +9,8 @@ from .analyser import Analyser
 class ESQL(object):
 
 	def __init__(self,host):
-		self.es = Elasticsearch(host)
-
-	def _init_select_dsl(self,column,table,where,group,having,order,limit):
-		dsl = SelectBuilder(column,table,
-							where,group,
-							having,order,limit).dsl
-		return dsl
+		self._es = Elasticsearch(host)
+		self.dsl_body = ''
 
 	def execute(self,sql):
 		parse = parse_handle(sql)
@@ -30,9 +25,14 @@ class ESQL(object):
 			order = parse['order']
 			limit = parse['limit']
 
-			dsl_body = SelectBuilder(distinct,column, table,where,
-									 group, having, order, limit).dsl
-			response = self.es.search(index=table,body=dsl_body)
+			self.dsl_body = SelectBuilder(distinct,column,table,where,group,having,order,limit).dsl
+			response = self._es.search(index=table,body=self.dsl_body)
 			analyser = Analyser(response,group,column,distinct)
 			analyser.analyse()
 			return analyser.result
+
+	@property
+	def dsl(self):
+		return self.dsl_body
+
+

@@ -122,6 +122,8 @@ class Structure(object):
         if compare == 'LIKE':
             right = right.replace('%', '*')
             subquery = {'wildcard':{name:right}}
+        elif compare == 'IN':
+            subquery = {'terms': {name: right}}
         elif compare == '=':
             subquery = {'term': {name: right}}
         elif compare in ('<>','!='):

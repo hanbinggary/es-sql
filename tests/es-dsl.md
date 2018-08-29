@@ -62,7 +62,7 @@ url: _search/scroll
         {"range":{"age":{"gt":"18"}}}}
     ]       # or
     "should":{
-        "wildcard":{"username":"*cj*"} # like
+        "wildcard":{"username":"*cj*"} # like(not analyzed)
     }
 }
 
