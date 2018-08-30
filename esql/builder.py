@@ -10,14 +10,11 @@ class Builder(object):
 
 
 class SelectBuilder(object):
-    def __init__(self,column, table, where,
+    def __init__(self,distinct,column, table, where,
                  group, having, order, limit):
-        if isinstance(column,dict):
-            self._distinct = True
-            self._column = column['distinct']
-        else:
-            self._distinct = False
-            self._column = column
+
+        self._distinct = distinct
+        self._column = column
         self._table = table
         self._where = where
         self._group = group
@@ -28,11 +25,9 @@ class SelectBuilder(object):
         self._dsl = {}
         self._structure = Structure()
 
-        self._show_columns = []
-
     def _b_column(self):
-        self._show_columns = self._structure.struct_column(self._column)
-        self._dsl['_source'] = self._show_columns
+        self._structure.struct_column(self._column)
+        self._dsl['_source'] = self._structure.source
 
     def _b_where(self):
         if len(self._where) > 0:
@@ -43,7 +38,7 @@ class SelectBuilder(object):
         aggs = {}
         group = self._group[:]
         if self._distinct:
-            group = self._show_columns[:]
+            group = self._structure.source[:]
         if len(group) > 0:
             self._structure.struct_group(group,self._having,aggs)
         else:

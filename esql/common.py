@@ -20,8 +20,9 @@ class Structure(object):
 
     def __init__(self):
         self._func_columns = []
-        self._show_columns = []
         self._model = Model()
+
+        self.source = []
 
     def struct_where(self,conditions):
         result = self._model.bool_query
@@ -91,7 +92,9 @@ class Structure(object):
             for name,func in self._func_columns:
                 if name == '*':
                     name = '_index'
-                metric_name = func+'_'+name
+                    metric_name = func
+                else:
+                    metric_name = func+'_'+name
                 if func == 'count':
                     func = 'value_count'
                 metric = {func:{'field':name}}
@@ -104,10 +107,9 @@ class Structure(object):
             if func:
                 self._func_columns.append((name,func))
             else:
-                self._show_columns.append(name)
-        if '*' in self._show_columns:
-            self._show_columns = []
-        return self._show_columns
+                self.source.append(name)
+        if '*' in self.source:
+            self.source = []
 
     def _split_list(self,source,wd):
         return [list(g) for k, g in groupby(source, lambda x: x == wd) if not k]

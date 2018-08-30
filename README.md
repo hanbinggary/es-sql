@@ -13,7 +13,7 @@ Elasticsearch SQL parser
 
 ## demo
 
-```
+```python
 	from esql.client import ESQL
 
 	sql = 'select * from blog;'

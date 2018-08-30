@@ -10,13 +10,18 @@ class ESQL(object):
 
 	def __init__(self,host):
 		self._es = Elasticsearch(host)
-		self.dsl_body = ''
 
-	def execute(self,sql):
+	def execute(self,sql,debug=False):
 		parse = parse_handle(sql)
 		dtype = parse['type']
 		if dtype == 'SELECT':
-			column = parse['column']
+			c = parse['column']
+			if isinstance(c, dict):
+				distinct = True
+				column = c['distinct']
+			else:
+				distinct = False
+				column = c
 			table = parse['table']
 			where = parse['where']
 			group = parse['group']
@@ -24,14 +29,14 @@ class ESQL(object):
 			order = parse['order']
 			limit = parse['limit']
 
-			self.dsl_body = SelectBuilder(column,table,where,group,having,order,limit).dsl
-			response = self._es.search(index=table,body=self.dsl_body)
-			analyser = Analyser(response,group,column)
+			select = SelectBuilder(distinct,column,table,where,group,having,order,limit)
+			dsl_body = select.dsl
+			if debug:
+				return dsl_body
+			response = self._es.search(index=table,body=dsl_body)
+			analyser = Analyser(response,group,column,distinct)
 			analyser.analyse()
 			return analyser.result
 
-	@property
-	def dsl(self):
-		return self.dsl_body
 
 
