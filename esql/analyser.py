@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 
 class Analyser(object):
-    def __init__(self,response,group,column,distinct):
+    def __init__(self,response,group,column):
         self.response = response
         self.group = group
-        self.column = column
-        self.distinct = distinct
+        if isinstance(column,dict):
+            self._distinct = True
+            self._column = column['distinct']
+        else:
+            self._distinct = False
+            self._column = column
         self.result = []
 
     def hits_analyse(self):
@@ -42,12 +46,12 @@ class Analyser(object):
         need_aggs = False
         if 'aggregations' in self.response:
             need_aggs = True
-        for column in self.column:
+        for column in self._column:
             if column['func']:
                 views.append(('%s_%s'%(column['func'],column['name'])))
             else:
                 views.append(column['name'])
-        if self.distinct == 'Y':
+        if self._distinct:
             self.group = views[:]
         if need_aggs:
             bucket = self.response['aggregations']

@@ -16,7 +16,6 @@ class ESQL(object):
 		parse = parse_handle(sql)
 		dtype = parse['type']
 		if dtype == 'SELECT':
-			distinct = parse['distinct']
 			column = parse['column']
 			table = parse['table']
 			where = parse['where']
@@ -25,9 +24,9 @@ class ESQL(object):
 			order = parse['order']
 			limit = parse['limit']
 
-			self.dsl_body = SelectBuilder(distinct,column,table,where,group,having,order,limit).dsl
+			self.dsl_body = SelectBuilder(column,table,where,group,having,order,limit).dsl
 			response = self._es.search(index=table,body=self.dsl_body)
-			analyser = Analyser(response,group,column,distinct)
+			analyser = Analyser(response,group,column)
 			analyser.analyse()
 			return analyser.result
 

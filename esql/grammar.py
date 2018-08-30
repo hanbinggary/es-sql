@@ -40,29 +40,43 @@ def p_dml(p):
 ###################################################
 ############         select            ############
 ###################################################
+# def p_select(p):
+#     """ select : SELECT distinct columns FROM STRING where group_by having order_by limit
+#     """
+#     p[0] = {
+#         'type'  : p[1],
+#         'distinct': p[2],
+#         'column': p[3],
+#         'table' : p[5],
+#         'where' : p[6],
+#         'group' : p[7],
+#         'having': p[8],
+#         'order' : p[9],
+#         'limit' : p[10]
+#     }
+
 def p_select(p):
-    """ select : SELECT distinct columns FROM STRING where group_by having order_by limit
+    """ select : SELECT columns FROM STRING where group_by having order_by limit
     """
     p[0] = {
         'type'  : p[1],
-        'distinct': p[2],
-        'column': p[3],
-        'table' : p[5],
-        'where' : p[6],
-        'group' : p[7],
-        'having': p[8],
-        'order' : p[9],
-        'limit' : p[10]
+        'column': p[2],
+        'table' : p[4],
+        'where' : p[5],
+        'group' : p[6],
+        'having': p[7],
+        'order' : p[8],
+        'limit' : p[9]
     }
 
-def p_distinct(p):
-    """ distinct : DISTINCT
-                 | empty
-    """
-    if 'DISTINCT' in p:
-        p[0] = 'Y'
-    else:
-        p[0] = 'N'
+# def p_distinct(p):
+#     """ distinct : DISTINCT
+#                  | empty
+#     """
+#     if 'DISTINCT' in p:
+#         p[0] = 'Y'
+#     else:
+#         p[0] = 'N'
 
 def p_where(p):
     """ where : WHERE conditions
@@ -126,14 +140,26 @@ def p_order_type(p):
 
 
 # p[0] => [x,x..] | [x]
+# def p_columns(p):
+#     """ columns : columns COMMA columns
+#                 | column
+#     """
+#     if len(p) > 2:
+#         p[0] = p[1] + p[3]
+#     else:
+#         p[0] = [p[1]]
+
 def p_columns(p):
     """ columns : columns COMMA columns
                 | column
+                | DISTINCT columns
     """
-    if len(p) > 2:
-        p[0] = p[1] + p[3]
-    else:
+    if len(p) == 2:
         p[0] = [p[1]]
+    if len(p) == 3:
+        p[0] = {p[1].lower():p[2]}
+    if len(p) == 4:
+        p[0] = p[1] + p[3]
 
 def p_column(p):
     """ column : COUNT "(" item ")"
@@ -233,7 +259,7 @@ def p_error(p):
 
 tokens = lexer.tokens
 
-DEBUG = True
+DEBUG = False
 
 L = lex.lex(module=lexer, optimize=False, debug=DEBUG)
 P = yacc.yacc(debug=DEBUG)

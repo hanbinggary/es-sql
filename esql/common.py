@@ -97,7 +97,6 @@ class Structure(object):
                 metric = {func:{'field':name}}
                 aggs[metric_name] = metric
 
-
     def struct_column(self,columns):
         for column in columns:
             name = column['name']
