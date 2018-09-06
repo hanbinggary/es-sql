@@ -125,6 +125,8 @@ class Structure(object):
             subquery = {'wildcard':{name:right}}
         elif compare == 'IN':
             subquery = {'terms': {name: right}}
+        elif compare == 'IS':
+            subquery = {right: {'field': name}}
         elif compare == '=':
             subquery = {'term': {name: right}}
         elif compare in ('<>','!='):

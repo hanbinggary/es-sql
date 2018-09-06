@@ -21,5 +21,19 @@ Elasticsearch SQL parser
 
 	esql = ESQL(host_port)
 	print(esql.execute(sql))
+
+	# If you just want to get the DSL sended
+	# query will not be executed actually
+	print(esql.execute(sql,debug=True))
 ```
+
+## SQL syntax supported
+````
+SELECT columns FROM index
+WHERE conditions
+GROUP BY column
+HAVING conditions
+ORDER BY column
+LIMIT number
+````
 

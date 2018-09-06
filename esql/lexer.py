@@ -33,6 +33,8 @@ reserved = {
     'in'    : 'IN',
     'like'  : 'LIKE',
     'between': 'BETWEEN',
+    'is'    : 'IS',
+    'not'   : 'NOT',
     'null'  : 'NULL',
     'count' : 'COUNT',
     'sum'   : 'SUM',

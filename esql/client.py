@@ -3,7 +3,7 @@
 from elasticsearch import Elasticsearch
 
 from .grammar import parse_handle
-from .builder import SelectBuilder
+from .builder import SelectBuilder,DeleteBuilder
 from .analyser import Analyser
 
 class ESQL(object):
@@ -37,6 +37,17 @@ class ESQL(object):
 			analyser = Analyser(response,group,column,distinct)
 			analyser.analyse()
 			return analyser.result
+
+		if dtype == 'DELETE':
+			table = parse['table']
+			where = parse['where']
+
+			select = DeleteBuilder(table, where)
+			dsl_body = select.dsl
+			if debug:
+				return dsl_body
+			response = self._es.delete_by_query(index=table, body=dsl_body)
+			print(response)
 
 
 

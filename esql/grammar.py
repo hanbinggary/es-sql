@@ -18,6 +18,7 @@ def p_expression(p):
 
 def p_dml(p):
     """ dml : select
+            | delete
     """
     p[0] = p[1]
 
@@ -35,6 +36,20 @@ def p_dml(p):
 #             | drop
 #     """
 #     p[0] = p[1]
+
+
+###################################################
+############         delete            ############
+###################################################
+def p_delete(p):
+    """ delete : DELETE FROM STRING where
+    """
+    p[0] = {
+        'type': p[1],
+        'table': p[3],
+        'where': p[4]
+    }
+
 
 
 ###################################################
@@ -203,6 +218,7 @@ def p_compare(p):
     """ compare : column COMPARISON item
                 | column LIKE QSTRING
                 | column IN "(" items ")"
+                | column IS null
     """
     p[0] = {
         'left' : p[1],
@@ -212,6 +228,14 @@ def p_compare(p):
     if len(p) > 4:
         p[0]['right'] = p[4]
 
+def p_null(p):
+    """ null : NULL
+             | NOT NULL
+    """
+    if len(p) == 2:
+        p[0] = 'missing'
+    else:
+        p[0] = 'exists'
 
 # empty return None
 # so expression like (t : empty) => len()==2

@@ -52,19 +52,16 @@ url: _search/scroll
 ...
 
 ## == != > < and or not etc
+{"term":{"username":"cj"}} # ==
+{"terms":[{"username":"cj"}]} # in
+{"exists":{"field":"username"}} # is not null
+{"missing":{"field":"username"}} # is null
+{"wildcard":{"username":"*cj*"}} # like(not analyzed)
 
 {
-    "must":{"term":{"username":"cj"}} # and ==
-    "must_not":{"term":{"username":"cj"}} #and !=
-    "should":[
-        {"term":{"username":"cj"}},
-        {"term":{"username":"cj2"},
-        {"range":{"age":{"gt":"18"}}}}
-    ]       # or
-    "should":{
-        "wildcard":{"username":"*cj*"} # like(not analyzed)
-    }
-}
+    "must":[]        # and
+    "must_not":[]    #and not
+    "should":[]      # or
 
 ...
 

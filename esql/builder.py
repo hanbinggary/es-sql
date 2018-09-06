@@ -74,4 +74,27 @@ class SelectBuilder(object):
         return self._dsl
 
 
+class DeleteBuilder(object):
+    def __init__(self, table, where):
+        self._table = table
+        self._where = where
+
+        self._dsl = {}
+        self._structure = Structure()
+
+    def _b_where(self):
+        if len(self._where) > 0:
+            _bool=self._structure.struct_where(self._where)
+            self._dsl['query'] = _bool
+
+    def build(self):
+        self._b_where()
+
+    @property
+    def dsl(self):
+        self.build()
+        print(json.dumps(self._dsl))
+        return self._dsl
+
+
 
