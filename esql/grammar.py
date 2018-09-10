@@ -5,16 +5,12 @@ from ply import lex,yacc
 from . import lexer
 from .exceptions import GrammarException
 
+
 def p_expression(p):
     """ expression : dml END
+                   | ddl END
     """
     p[0] = p[1]
-
-# def p_expression(p):
-#     """ expression : dml END
-#                    | ddl END
-#     """
-#     p[0] = p[1]
 
 def p_dml(p):
     """ dml : select
@@ -30,6 +26,11 @@ def p_dml(p):
 #     """
 #     p[0] = p[1]
 
+def p_ddl(p):
+    """ ddl : create
+    """
+    p[0] = p[1]
+
 # def p_ddl(p):
 #     """ ddl : create
 #             | alter
@@ -42,7 +43,7 @@ def p_dml(p):
 ############         delete            ############
 ###################################################
 def p_delete(p):
-    """ delete : DELETE FROM STRING where
+    """ delete : DELETE FROM table where
     """
     p[0] = {
         'type': p[1],
@@ -56,7 +57,7 @@ def p_delete(p):
 ############         select            ############
 ###################################################
 def p_select(p):
-    """ select : SELECT columns FROM STRING where group_by having order_by limit
+    """ select : SELECT columns FROM table where group_by having order_by limit
     """
     p[0] = {
         'type'  : p[1],
@@ -68,6 +69,15 @@ def p_select(p):
         'order' : p[8],
         'limit' : p[9]
     }
+
+def p_table(p):
+    """ table : string
+              | string "." string
+    """
+    if len(p) == 2:
+        p[0] = p[1]
+    else:
+        p[0] = p[1] + '.' + p[3]
 
 def p_where(p):
     """ where : WHERE conditions
@@ -237,6 +247,51 @@ def p_null(p):
     else:
         p[0] = 'exists'
 
+
+
+###################################################
+############         create            ############
+###################################################
+def p_create(p):
+    """ create : CREATE TABLE table "(" create_columns ")"
+    """
+    p[0] = {
+        'type':p[1],
+        'table':p[3],
+        'columns':p[5]
+    }
+
+def p_create_columns(p):
+    """ create_columns : create_column
+                       | create_columns COMMA create_columns
+    """
+    if len(p) == 2:
+        p[0] = [p[1]]
+    else:
+        p[0] = p[1] + p[3]
+
+def p_create_column(p):
+    """ create_column : string column_type
+    """
+    p[0] = {'name': p[1],'type': p[2]}
+
+
+def p_column_type(p):
+    """ column_type : TEXT
+                    | KEYWORD
+                    | LONG
+                    | INTEGER
+                    | SHORT
+                    | TYPE
+                    | DOUBLE
+                    | FLOAT
+                    | DATE
+                    | BOOLEAN
+                    | BINARY
+    """
+    p[0] = p[1]
+
+
 # empty return None
 # so expression like (t : empty) => len()==2
 def p_empty(p):
@@ -249,7 +304,7 @@ def p_error(p):
 
 tokens = lexer.tokens
 
-DEBUG = False
+DEBUG = True
 
 L = lex.lex(module=lexer, optimize=False, debug=DEBUG)
 P = yacc.yacc(debug=DEBUG)

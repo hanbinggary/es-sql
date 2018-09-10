@@ -106,3 +106,37 @@ OR
         "script": "(val_100 == 6862)"
     }
 }
+
+
+# delete
+
+only es5+ supported
+
+# update
+
+# insert
+
+# create
+{
+    #default 5/1
+    "settings" : {
+        "number_of_shards" : 5,
+        "number_of_replicas" : 1
+    },
+    "mappings" : {
+        "type1" : {
+            "properties" : {
+                "field1" : { "type" : "text" }
+            }
+        }
+    }
+}
+
+field type
+string: text/keyword
+numeric: long/integer/short/byte/double/float/half_float/scaled_fload
+date: date
+boolean: boolean
+binary: binary
+range: integer_range/float_range/long_range/double_range/date_range
+....

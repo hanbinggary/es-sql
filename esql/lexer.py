@@ -40,7 +40,19 @@ reserved = {
     'sum'   : 'SUM',
     'avg'   : 'AVG',
     'min'   : 'MIN',
-    'max'   : 'MAX'
+    'max'   : 'MAX',
+
+    'text'  : 'TEXT',
+    'keyword':'KEYWORD',
+    'long'  : 'LONG',
+    'integer':'INTEGER',
+    'short' : 'SHORT',
+    'type'  : 'TYPE',
+    'double': 'DOUBLE',
+    'float' : 'FLOAT',
+    'date'  : 'DATE',
+    'boolean':'BOOLEAN',
+    'binary': 'BINARY'
 }
 
 tokens = (

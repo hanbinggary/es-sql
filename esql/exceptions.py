@@ -6,3 +6,7 @@ class LexerException(Exception):
 
 class GrammarException(Exception):
     pass
+
+class CreateException(Exception):
+    pass
+

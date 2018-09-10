@@ -2,14 +2,15 @@
 
 import json
 
+from .exceptions import *
 from .common import Structure
 
-class Builder(object):
+class Builder:
     def __init__(self):
         self.dsl = {}
 
 
-class SelectBuilder(object):
+class SelectBuilder:
     def __init__(self,distinct,column, table, where,
                  group, having, order, limit):
 
@@ -74,7 +75,7 @@ class SelectBuilder(object):
         return self._dsl
 
 
-class DeleteBuilder(object):
+class DeleteBuilder:
     def __init__(self, table, where):
         self._table = table
         self._where = where
@@ -96,5 +97,32 @@ class DeleteBuilder(object):
         print(json.dumps(self._dsl))
         return self._dsl
 
+class CreateBuilder:
+    def __init__(self,table,column):
+        self._table = table
+        self._column = column
 
+        self._dsl = {}
+
+    def _b_column(self):
+        try:
+            _index,_type = self._table.split('.')
+        except ValueError:
+            raise CreateException('table error!')
+
+        properties = {}
+        for c in self._column:
+            _colname = c['name']
+            _coltype = c['type']
+            properties[_colname] = {'type':_coltype}
+        self._dsl['mapping'] = {_type:{'properties':properties}}
+
+    def build(self):
+        self._b_column()
+
+    @property
+    def dsl(self):
+        self.build()
+        print(json.dumps(self._dsl))
+        return self._dsl
 
