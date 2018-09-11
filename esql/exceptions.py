@@ -10,3 +10,5 @@ class GrammarException(Exception):
 class CreateException(Exception):
     pass
 
+class TableExistsException(Exception):
+    pass

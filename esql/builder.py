@@ -2,7 +2,6 @@
 
 import json
 
-from .exceptions import *
 from .common import Structure
 
 class Builder:
@@ -98,24 +97,19 @@ class DeleteBuilder:
         return self._dsl
 
 class CreateBuilder:
-    def __init__(self,table,column):
-        self._table = table
+    def __init__(self,type,column):
+        self._type = type
         self._column = column
 
         self._dsl = {}
 
     def _b_column(self):
-        try:
-            _index,_type = self._table.split('.')
-        except ValueError:
-            raise CreateException('table error!')
-
         properties = {}
         for c in self._column:
             _colname = c['name']
             _coltype = c['type']
             properties[_colname] = {'type':_coltype}
-        self._dsl['mapping'] = {_type:{'properties':properties}}
+        self._dsl['mappings'] = {self._type:{'properties':properties}}
 
     def build(self):
         self._b_column()

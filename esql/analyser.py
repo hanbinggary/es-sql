@@ -63,4 +63,3 @@ class Analyser(object):
                     self.result.append({bk:bucket[bk]['value']})
         else:
             self.hits_analyse()
-

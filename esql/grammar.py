@@ -28,15 +28,11 @@ def p_dml(p):
 
 def p_ddl(p):
     """ ddl : create
+            | drop
+            | desc
     """
     p[0] = p[1]
 
-# def p_ddl(p):
-#     """ ddl : create
-#             | alter
-#             | drop
-#     """
-#     p[0] = p[1]
 
 
 ###################################################
@@ -253,12 +249,12 @@ def p_null(p):
 ############         create            ############
 ###################################################
 def p_create(p):
-    """ create : CREATE TABLE table "(" create_columns ")"
+    """ create : CREATE TABLE if_not_exists table "(" create_columns ")"
     """
     p[0] = {
         'type':p[1],
-        'table':p[3],
-        'columns':p[5]
+        'table':p[4],
+        'column':p[6]
     }
 
 def p_create_columns(p):
@@ -276,6 +272,13 @@ def p_create_column(p):
     p[0] = {'name': p[1],'type': p[2]}
 
 
+def p_if_not_exists(p):
+    """ if_not_exists : IF NOT EXISTS
+                      | empty
+    """
+    pass
+
+
 def p_column_type(p):
     """ column_type : TEXT
                     | KEYWORD
@@ -289,7 +292,30 @@ def p_column_type(p):
                     | BOOLEAN
                     | BINARY
     """
-    p[0] = p[1]
+    p[0] = p[1].lower()
+
+
+###################################################
+############         drop              ############
+###################################################
+def p_drop(p):
+    """ drop : DROP TABLE table
+    """
+    p[0] = {
+        'type': p[1],
+        'table': p[3]
+    }
+
+###################################################
+############         desc              ############
+###################################################
+def p_desc(p):
+    """ desc : DESC table
+    """
+    p[0] = {
+        'type' : p[1],
+        'table': p[2]
+    }
 
 
 # empty return None

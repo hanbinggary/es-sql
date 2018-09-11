@@ -26,6 +26,8 @@ reserved = {
     'alter' : 'ALTER',
     'drop'  : 'DROP',
     'show'  : 'SHOW',
+    'if'    : 'IF',
+    'exists': 'EXISTS',
 
     'as'    : 'AS',
     'and'   : 'AND',
