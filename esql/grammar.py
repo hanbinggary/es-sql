@@ -14,17 +14,12 @@ def p_expression(p):
 
 def p_dml(p):
     """ dml : select
+            | insert
+            | update
             | delete
     """
     p[0] = p[1]
 
-# def p_dml(p):
-#     """ dml : select
-#             | update
-#             | insert
-#             | delete
-#     """
-#     p[0] = p[1]
 
 def p_ddl(p):
     """ ddl : create
@@ -34,6 +29,50 @@ def p_ddl(p):
     p[0] = p[1]
 
 
+###################################################
+############         update            ############
+###################################################
+def p_update(p):
+    """ update : UPDATE table SET sets where
+    """
+    p[0] = {
+        'type': p[1],
+        'table': p[2],
+        'column': p[4],
+        'where': p[5]
+    }
+
+def p_sets(p):
+    """ sets : item COMPARISON item
+             | sets COMMA sets
+    """
+    if ',' in p:
+        p[0] = p[1] + p[3]
+    else:
+        p[0] = [{'name':p[1],'value':p[3]}]
+
+
+###################################################
+############         insert            ############
+###################################################
+def p_insert(p):
+    """ insert : INSERT INTO table "(" items ")" VALUES values
+    """
+    p[0] = {
+        'type': p[1],
+        'table': p[3],
+        'column': p[5],
+        'values': p[8]
+    }
+
+def p_values(p):
+    """ values : "(" items ")"
+               | values COMMA values
+    """
+    if "," in p:
+        p[0] = p[1] + p[3]
+    else:
+        p[0] = [p[2]]
 
 ###################################################
 ############         delete            ############

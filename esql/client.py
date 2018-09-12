@@ -2,10 +2,11 @@
 
 from elasticsearch import Elasticsearch
 from elasticsearch.client import IndicesClient
+from elasticsearch.helpers import bulk
 
 from esql.exceptions import CreateException,TableExistsException
 from .grammar import parse_handle
-from .builder import SelectBuilder,DeleteBuilder,CreateBuilder
+from .builder import SelectBuilder,DeleteBuilder,CreateBuilder,UpdateBuilder
 from .analyser import Analyser
 
 
@@ -40,6 +41,47 @@ class Select:
 		analyser.analyse()
 		return analyser.result
 
+class Insert:
+	def __init__(self, es, parse):
+		self.table = parse['table']
+		self.column = parse['column']
+		self.values = parse['values']
+
+		self._es = es
+
+	def execute(self, debug):
+		try:
+			_index, _type = self.table.split('.')
+		except ValueError:
+			raise CreateException('table error!')
+
+		m = {'_index':_index,'_type':_type}
+
+		def gendata(m):
+			for value in self.values:
+				source = dict(zip(self.column,value),**m)
+				yield source
+
+		response = bulk(self._es,gendata(m))
+		print(response)
+
+
+class Update:
+	def __init__(self,es, parse):
+		self.table = parse['table']
+		self.column = parse['column']
+		self.where = parse['where']
+
+		self._es = es
+
+	def execute(self,debug):
+		update = UpdateBuilder(self.column,self.where)
+
+		dsl_body = update.dsl
+		if debug:
+			return dsl_body
+		response = self._es.update_by_query(index=self.table, body=dsl_body)
+		return response
 
 class Delete:
 	def __init__(self, es, parse):
@@ -116,6 +158,8 @@ class Desc:
 
 ACTIONS = {
 	'SELECT':Select,
+	'INSERT':Insert,
+	'UPDATE':Update,
 	'DELETE':Delete,
 	'CREATE':Create,
 	'DROP'	:Drop,

@@ -120,3 +120,30 @@ class CreateBuilder:
         print(json.dumps(self._dsl))
         return self._dsl
 
+
+class UpdateBuilder:
+    def __init__(self,column,where):
+        self.column = column
+        self._where = where
+
+        self._structure = Structure()
+        self._dsl = {}
+
+    def _b_update_columns(self):
+        script = self._structure.struct_update_script(self.column)
+        self._dsl['script'] = script
+
+    def _b_where(self):
+        if len(self._where) > 0:
+            _bool=self._structure.struct_where(self._where)
+            self._dsl['query'] = _bool
+
+    def build(self):
+        self._b_update_columns()
+        self._b_where()
+
+    @property
+    def dsl(self):
+        self.build()
+        print(json.dumps(self._dsl))
+        return self._dsl

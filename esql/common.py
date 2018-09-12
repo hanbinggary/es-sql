@@ -111,6 +111,20 @@ class Structure(object):
         if '*' in self.source:
             self.source = []
 
+    def struct_update_script(self,columns):
+        script = {}
+        source = ''
+        for column in columns:
+            name = column['name']
+            value = column['value']
+
+            if not source:
+                source += 'ctx._source.%s=%s'%(name,value)
+            else:
+                source += ',ctx._source.%s=%s'%(name,value)
+        script['source'] = source+';'
+        return script
+
     def _split_list(self,source,wd):
         return [list(g) for k, g in groupby(source, lambda x: x == wd) if not k]
 
