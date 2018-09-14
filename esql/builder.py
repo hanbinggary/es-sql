@@ -1,18 +1,20 @@
 # -*- coding: utf-8 -*-
 
-import json
-
 from .common import Structure
 
 class Builder:
     def __init__(self):
-        self.dsl = {}
+        self._dsl = {}
+
+    @property
+    def dsl(self):
+        return self._dsl
 
 
-class SelectBuilder:
+class SelectBuilder(Builder):
     def __init__(self,distinct,column, table, where,
                  group, having, order, limit):
-
+        super(SelectBuilder,self).__init__()
         self._distinct = distinct
         self._column = column
         self._table = table
@@ -22,8 +24,9 @@ class SelectBuilder:
         self._order = order
         self._limit = limit
 
-        self._dsl = {}
         self._structure = Structure()
+
+        self._build()
 
     def _b_column(self):
         self._structure.struct_column(self._column)
@@ -60,48 +63,40 @@ class SelectBuilder:
             self._dsl['from'] = _from
             self._dsl['size'] = _size
 
-    def build(self):
+    def _build(self):
         self._b_column()
         self._b_where()
         self._b_group()
         self._b_order()
         self._b_limit()
 
-    @property
-    def dsl(self):
-        self.build()
-        print(json.dumps(self._dsl))
-        return self._dsl
 
-
-class DeleteBuilder:
+class DeleteBuilder(Builder):
     def __init__(self, table, where):
+        super(DeleteBuilder, self).__init__()
         self._table = table
         self._where = where
 
-        self._dsl = {}
         self._structure = Structure()
+
+        self._build()
 
     def _b_where(self):
         if len(self._where) > 0:
             _bool=self._structure.struct_where(self._where)
             self._dsl['query'] = _bool
 
-    def build(self):
+    def _build(self):
         self._b_where()
 
-    @property
-    def dsl(self):
-        self.build()
-        print(json.dumps(self._dsl))
-        return self._dsl
 
-class CreateBuilder:
+class CreateBuilder(Builder):
     def __init__(self,type,column):
+        super(CreateBuilder, self).__init__()
         self._type = type
         self._column = column
 
-        self._dsl = {}
+        self._build()
 
     def _b_column(self):
         properties = {}
@@ -111,23 +106,19 @@ class CreateBuilder:
             properties[_colname] = {'type':_coltype}
         self._dsl['mappings'] = {self._type:{'properties':properties}}
 
-    def build(self):
+    def _build(self):
         self._b_column()
 
-    @property
-    def dsl(self):
-        self.build()
-        print(json.dumps(self._dsl))
-        return self._dsl
 
-
-class UpdateBuilder:
+class UpdateBuilder(Builder):
     def __init__(self,column,where):
+        super(UpdateBuilder, self).__init__()
         self.column = column
         self._where = where
 
         self._structure = Structure()
-        self._dsl = {}
+
+        self._build()
 
     def _b_update_columns(self):
         script = self._structure.struct_update_script(self.column)
@@ -138,12 +129,6 @@ class UpdateBuilder:
             _bool=self._structure.struct_where(self._where)
             self._dsl['query'] = _bool
 
-    def build(self):
+    def _build(self):
         self._b_update_columns()
         self._b_where()
-
-    @property
-    def dsl(self):
-        self.build()
-        print(json.dumps(self._dsl))
-        return self._dsl

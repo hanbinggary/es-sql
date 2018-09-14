@@ -2,7 +2,7 @@
 
 from ply import lex,yacc
 
-from . import lexer
+from .lexer import Lexer
 from .exceptions import GrammarException
 
 
@@ -367,11 +367,11 @@ def p_error(p):
     raise GrammarException("Syntax error in input!")
 
 
-tokens = lexer.tokens
+tokens = Lexer.tokens
 
 DEBUG = True
 
-L = lex.lex(module=lexer, optimize=False, debug=DEBUG)
+L = lex.lex(module=Lexer(), optimize=False, debug=DEBUG)
 P = yacc.yacc(debug=DEBUG)
 
 def parse_handle(sql):
