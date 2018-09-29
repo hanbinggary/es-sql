@@ -1,0 +1,3 @@
+esql/parser.out
+esql/parsetab.py
+*.pyc
