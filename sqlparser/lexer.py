@@ -1,12 +1,13 @@
-# -*- coding: utf-8 -*-
+from ply import lex
 
-from .exceptions import LexerException
+from .exceptions import IllegalCharacterException
 
 
 class Lexer:
     reserved = {
         'select': 'SELECT',
-        'distinct':'DISTINCT',
+        'scan' : 'SCAN',
+        'distinct': 'DISTINCT',
         'from'  : 'FROM',
         'where' : 'WHERE',
         'group' : 'GROUP',
@@ -25,11 +26,9 @@ class Lexer:
 
         'create': 'CREATE',
         'table' : 'TABLE',
-        'alter' : 'ALTER',
         'drop'  : 'DROP',
         'show'  : 'SHOW',
-        'if'    : 'IF',
-        'exists': 'EXISTS',
+        'with'  : 'WITH',
 
         'as'    : 'AS',
         'and'   : 'AND',
@@ -47,23 +46,23 @@ class Lexer:
         'max'   : 'MAX',
 
         'text'  : 'TEXT',
-        'keyword':'KEYWORD',
+        'keyword': 'KEYWORD',
         'long'  : 'LONG',
-        'integer':'INTEGER',
+        'integer': 'INTEGER',
         'short' : 'SHORT',
         'type'  : 'TYPE',
         'double': 'DOUBLE',
         'float' : 'FLOAT',
         'date'  : 'DATE',
-        'boolean':'BOOLEAN',
+        'boolean': 'BOOLEAN',
         'binary': 'BINARY'
     }
 
     tokens = (
         'COMPARISON',
-        'STRING',
+        'NAME',
         'NUMBER',
-        'QSTRING',
+        'STRING',
         'END',
         'COMMA',
     ) + tuple(set(reserved.values()))
@@ -74,24 +73,28 @@ class Lexer:
     t_COMMA = r','
     t_ignore = ' \t\n'
 
-    def t_STRING(self,t):
-        r"[a-zA-Z][_a-zA-Z0-9]*"
-        t.type = Lexer.reserved.get(t.value.lower(), 'STRING')
-        if t.type != 'STRING':
+    def __init__(self,
+                 debug=False):
+
+        self.lexer = lex.lex(module=self,
+                             debug=debug)
+
+    def t_NAME(self, t):
+        r"[_a-zA-Z][_a-zA-Z0-9]*|[\u4e00-\u9fa5]+"
+        t.type = Lexer.reserved.get(t.value.lower(), 'NAME')
+        if t.type != 'NAME':
             t.value = t.value.upper()
         return t
 
-    def t_QSTRING(self,t):
+    def t_STRING(self, t):
         r"('[^\']*')|(\"[^\"]*\")"
         t.value = t.value[1:-1]
         return t
 
-    def t_NUMBER(self,t):
+    def t_NUMBER(self, t):
         r"\d+(\.\d+)?"
-        t.value = int(t.value)
         return t
 
-    def t_error(self,t):
-        raise LexerException("Illegal character '%s' at line %s pos %s"
-                            % (t.value[0],t.lineno,t.lexpos))
+    def t_error(self, t):
+        raise IllegalCharacterException("Illegal character {}.".format(t.value[0]))
 
