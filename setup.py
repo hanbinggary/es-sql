@@ -3,7 +3,7 @@
 from setuptools import setup
 
 
-packages = ['es-sql']
+packages = ['es_sql']
 
 requires = [
     'elasticsearch',
@@ -11,7 +11,7 @@ requires = [
 ]
 
 setup(
-    name = "es-sql-python",
+    name = "es_sql-python",
     version = "0.1",
     author = "yasinasama",
     author_email = "yasinasama01@gmail.com",
