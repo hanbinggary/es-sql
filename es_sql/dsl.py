@@ -19,8 +19,8 @@ class QueryDSL:
         if cond_k in self.combine.keys():
             return self.combine[cond_k](self.build(cond_v[0]), self.build(cond_v[1]))
         else:
-            fname, value = getkv(cond_v)
-            field = Field(fname)
+            name, value = getkv(cond_v)
+            field = Field(name)
             return Query(field, cond_k, value).bool()
 
     def to_dict(self):

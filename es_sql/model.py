@@ -79,9 +79,6 @@ class Field:
         '''
         return {'term': {self.name: other}}
 
-    def query_string(self, other):
-        pass
-
     __ne__ = __eq__
 
     # between
@@ -166,7 +163,8 @@ class Bool:
         return q
 
     def to_dict(self):
-        return {'bool': {'must': self.must, 'should': self.should, 'must_not': self.must_not}}
+        # 用filter而不用must是考虑filter不计算score，性能更好
+        return {'bool': {'filter': self.must, 'should': self.should, 'must_not': self.must_not}}
 
     def _new(self):
         return self.__class__()
