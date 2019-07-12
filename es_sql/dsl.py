@@ -89,9 +89,6 @@ class Select:
         fields = []
         aggfields = set()
 
-        if '*' in column:
-            return ['_id', '*'], set(), group
-
         for col in column:
             if isinstance(col, str):
                 fields.append(col)
@@ -104,6 +101,7 @@ class Select:
                     return [], set(), v
 
                 aggfields.add(AggField(name, func))
+
         return fields, aggfields, group
 
     def agg(self, bkfield):
@@ -138,3 +136,14 @@ class Select:
         if len(size) == 2:
             return Size(size[1]).to_dict()
         return Size().to_dict()
+
+
+class Scan(Select):
+    def __init__(self, parsed):
+        super(Scan, self).__init__(parsed)
+
+    def fields(self):
+        return self.parsed['column']
+
+    def size(self):
+        return self.parsed['limit']

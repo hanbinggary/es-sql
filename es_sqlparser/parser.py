@@ -111,14 +111,24 @@ class Parser:
     ############         scan              ############
     ###################################################
     def p_scan(self, p):
-        """ scan : SCAN columns FROM tables where
+        """ scan : SCAN columns FROM tables where order_by size
         """
         p[0] = {
             'method': p[1],
             'column': p[2],
             'table': p[4],
-            'where': p[5]
+            'where': p[5],
+            'order': p[6],
+            'limit': p[7]
         }
+
+    def p_size(self, p):
+        """ size : LIMIT NUMBER
+                 | empty
+        """
+        p[0] = -1
+        if len(p) > 2:
+            p[0] = p[2]
 
 
     ###################################################
@@ -372,7 +382,7 @@ class Parser:
             'method': p[1],
             'table': p[3],
             'column': p[5],
-            'with': p[-1]
+            'with': p[7]
         }
 
     def p_create_columns(self, p):

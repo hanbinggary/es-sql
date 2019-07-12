@@ -93,6 +93,10 @@ class Lexer:
 
     def t_NUMBER(self, t):
         r"\d+(\.\d+)?"
+        try:
+            t.value = int(t.value)
+        except ValueError:
+            t.value = float(t.value)
         return t
 
     def t_error(self, t):

@@ -83,9 +83,7 @@ class Hits:
     def source(self, sfields, cfields):
         res = []
         for hit in self.hits:
-            # 这边取hit数据是根据：
-            # 1、如果是 select * 这种方式查询，默认会把 _id 一起查出来。这是为了和sql查询行为一致
-            # 2、如果不指定其他字段（非 _index/_type/_id 字段）那么hit['_source']中的内容就不需要了
+            # 如果不指定其他字段（非 _index/_type/_id 字段）那么hit['_source']中的内容就不需要了
             if not sfields:
                 sour = {}
             else:
@@ -95,3 +93,21 @@ class Hits:
             res.append(sour)
 
         return res
+
+    def iter_source(self, sfields, cfields, size):
+        offset = 0
+        for data in self.hits:
+
+            offset += 1
+
+            if size != -1 and offset > size:
+                break
+
+            if not sfields:
+                sour = {}
+            else:
+                sour = data['_source']
+            for f in cfields:
+                sour[f] = data[f]
+
+            yield sour

@@ -21,26 +21,38 @@ class Client:
         sql = self.sql_format(sql)
         parsed = self.parse(sql)
 
-        return SQLCLASS[parsed['method']](self.es, parsed)
+        method = parsed['method']
+
+        return SQLCLASS[method](self.es, parsed)
 
 
 c = Client(host='10.68.120.106', port=9204)
-# c.execute('select city,count(*) from test1es.base group by city having count(*)>1')
 
-# c.execute('select * from test1es.base where city!="杭州" and city!="兰州"')
-# c.execute('select _id,_type from test1es.base')
-# c.execute('select count1 from test1es where count1 between 2 and 10')
-# c.execute('select * from test1es where id =444')
-# c.execute('select count(*) from test1es.base')
-# c.execute('select count(distinct(city)) from test1es.base')
-# c.execute('select * from test1es.base where city="上" and count1=1')
-c.execute('select * from test1es.base where city="杭州" and (city= "兰州" or count2="5")')
-# c.execute('select count(city) from test1es.base group by city, count1, count2')
-# c.execute('select count(city) from test1es.base group by city')
-# c.execute('select city,count1,count(*) from test1es.base group by city,count1 having count(city)>0')
-# c.execute('select sum(count2) from test1es where city="杭州"')
-# c.execute('select * from test1es order by count1')
+# print(c.execute('select _index,_type,_id,* from test1es.base'))
+# print(c.execute('select * from test1es.base'))
+# print(c.execute('select count(*) from test1es.base'))
+# print(c.execute('select count(distinct(city)) from test1es.base'))
+# print(c.execute('select * from test1es.base where city!="杭州" and city!="兰州"'))
+# print(c.execute('select count1 from test1es where count1 between 2 and 10'))
+# print(c.execute('select city,count(*) from test1es.base group by city having count(*)>1'))
+# print(c.execute('select * from test1es limit 0,4'))
+# print(c.execute('select * from test1es.base where city="杭州" or (city= "兰州" or count2="5") order by city'))
+# print(c.execute('select count1,count2,count(city) from test1es.base group by city, count1, count2'))
+# print(c.execute('select count(city) from test1es.base group by city'))
+# print(c.execute('select city,count1,count(*) from test1es.base group by city,count1 having count(city)>0'))
+# print(c.execute('select sum(count2) from test1es where city="杭州"'))
+# print(c.execute('select * from test1es order by count1'))
 
+# for i in c.execute('scan _index,* from test1es'):
+#     print(i)
+# for i in c.execute('scan * from test1es limit 4'):
+# #     print(i)
+# for i in c.execute('scan city from test1es limit 4'):
+#     print(i)
+# for i in c.execute('scan * from test1es where city=兰州'):
+#     print(i)
+# for i in c.execute('scan * from test1es where city=杭州 order by count2 desc'):
+#     print(i)
 
 
 
