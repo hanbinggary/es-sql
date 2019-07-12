@@ -1,8 +1,9 @@
 from elasticsearch import Elasticsearch
 
-from es_sqlparser import parse_handle
+from es_sqlparser import parse_handle, do_test
 from es_sql.request import SQLCLASS
 
+do_test()
 
 class Client:
 
@@ -20,6 +21,7 @@ class Client:
     def execute(self, sql):
         sql = self.sql_format(sql)
         parsed = self.parse(sql)
+        print(parsed)
 
         method = parsed['method']
 
@@ -53,6 +55,8 @@ c = Client(host='10.68.120.106', port=9204)
 #     print(i)
 # for i in c.execute('scan * from test1es where city=杭州 order by count2 desc'):
 #     print(i)
+
+c.execute('create table test5es(user keyword {analyzer=english},addr keyword/text) with 5,1')
 
 
 

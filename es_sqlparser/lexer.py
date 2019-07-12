@@ -55,7 +55,11 @@ class Lexer:
         'float' : 'FLOAT',
         'date'  : 'DATE',
         'boolean': 'BOOLEAN',
-        'binary': 'BINARY'
+        'binary': 'BINARY',
+
+        'analyzer': 'ANALYZER',
+        'stanard': 'STANDARD',
+        'english': 'ENGLISH'
     }
 
     tokens = (
@@ -67,7 +71,7 @@ class Lexer:
         'COMMA',
     ) + tuple(set(reserved.values()))
 
-    literals = '(){}@%.*[]:-^'
+    literals = '(){}@%.*[]:-^/'
     t_COMPARISON = r'<>|!=|>=|<=|=|>|<'
     t_END = r';'
     t_COMMA = r','

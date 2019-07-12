@@ -386,8 +386,8 @@ class Parser:
         }
 
     def p_create_columns(self, p):
-        """ create_columns : create_column
-                           | create_columns COMMA create_columns
+        """ create_columns : create_columns COMMA create_columns
+                           | create_column
         """
         if len(p) == 2:
             p[0] = [p[1]]
@@ -395,9 +395,9 @@ class Parser:
             p[0] = p[1] + p[3]
 
     def p_create_column(self, p):
-        """ create_column : string column_type
+        """ create_column : string column_type mapping_params
         """
-        p[0] = {'name': p[1], 'type': p[2]}
+        p[0] = {p[1]: {'type': p[2], **p[3]}}
 
     def p_column_type(self, p):
         """ column_type : TEXT
@@ -411,8 +411,45 @@ class Parser:
                         | DATE
                         | BOOLEAN
                         | BINARY
+                        | column_type "/" column_type
         """
-        p[0] = p[1].lower()
+        if len(p) > 2:
+            p[0] = [p[1], p[3]]
+        else:
+            p[0] = p[1].lower()
+
+    def p_mapping_params(self, p):
+        """ mapping_params : "{" params "}"
+                           | empty
+        """
+        if len(p) > 2:
+            p[0] = p[2]
+        else:
+            p[0] = {}
+
+    def p_params(self, p):
+        """ params : params COMMA params
+                   | param
+        """
+        if len(p) == 2:
+            p[0] = p[1]
+        else:
+            p[0] = {**p[1], **p[3]}
+
+    def p_param(self, p):
+        """ param : ANALYZER COMPARISON analyzers
+                  | empty
+        """
+        if len(p) > 2:
+            p[0] = {p[1]: p[3]}
+        else:
+            p[0] = {}
+
+    def p_analyzers(self, p):
+        """ analyzers : STANDARD
+                      | ENGLISH
+        """
+        p[0] = p[1]
 
     def p_with(self, p):
         """ with : WITH numbers
