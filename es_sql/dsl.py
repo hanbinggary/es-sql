@@ -27,7 +27,7 @@ class QueryDSL:
         if self.conditions:
             query = self.build(self.conditions).to_dict()
             return {'query': query}
-        return {}
+        return {'query': {'match_all': {}}}
 
 
 class HQueryDSL(QueryDSL):
@@ -190,13 +190,91 @@ class Drop:
         return Index(table)
 
 
+class Desc(Drop):
+    def doc_type(self):
+        table = self.parsed['table']
+        if '.' not in table:
+            dt = None
+        else:
+            dt = table.split('.')[1]
+        return DocType(dt)
+
+
 class Insert:
     def __init__(self, parsed):
         self.parsed = parsed
 
     def index(self):
         table = self.parsed['table']
-        return Index(table)
+        return Index(table.split('.')[0])
+
+    def doc_type(self):
+        table = self.parsed['table']
+        if '.' not in table:
+            dt = 'base'
+        else:
+            dt = table.split('.')[1]
+        return DocType(dt)
+
+    def fields(self):
+        return [Field(column).name for column in self.parsed['column']]
 
     def values(self):
         values = self.parsed['values']
+        if len(set([len(i) for i in values])) != 1:
+            raise Exception('插入值个数与指定列个数不一致!')
+        return values
+
+
+class Delete:
+    def __init__(self, parsed):
+        self.parsed = parsed
+
+    def index(self):
+        table = self.parsed['table']
+        return Index(table.split('.')[0])
+
+    def doc_type(self):
+        table = self.parsed['table']
+        if '.' not in table:
+            dt = 'base'
+        else:
+            dt = table.split('.')[1]
+        return DocType(dt)
+
+    def id(self):
+        conditions = self.parsed['where']
+        if '=' in conditions and Field(getkv(conditions['='])[0]).name == '_id':
+            return getkv(conditions['='])[1]
+        else:
+            raise Exception('只支持通过id删除文档!')
+
+
+class Update(Delete):
+    def reset_value(self):
+        values = {}
+        for rv in self.parsed['column']:
+            values.update(rv)
+        return values
+
+
+class Show:
+    def __init__(self, parsed):
+        self.parsed = parsed
+
+    def opt(self):
+        return self.parsed['option'].lower()
+
+    def reg(self):
+        reg = self.parsed['regex']
+
+        if reg.startswith('%') and reg.endswith('%'):
+            reg = reg.strip('%')
+        elif reg.startswith('%'):
+            reg = reg.strip('%') + '$'
+        elif reg.endswith('%'):
+            reg = '^' + reg.strip('%')
+        else:
+            reg = '^' + reg + '$'
+
+        return reg

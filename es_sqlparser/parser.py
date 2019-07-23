@@ -26,6 +26,7 @@ class Parser:
     def p_expression(self, p):
         """ expression : dml END
                        | ddl END
+                       | show END
         """
         p[0] = p[1]
 
@@ -52,7 +53,7 @@ class Parser:
     ############         update            ############
     ###################################################
     def p_update(self, p):
-        """ update : UPDATE table SET sets where
+        """ update : UPDATE NAME SET sets where
         """
         p[0] = {
             'method': p[1],
@@ -63,20 +64,20 @@ class Parser:
 
 
     def p_sets(self, p):
-        """ sets : item COMPARISON item
+        """ sets : NAME COMPARISON item
                  | sets COMMA sets
         """
         if ',' in p:
             p[0] = p[1] + p[3]
         else:
-            p[0] = [{'name': p[1], 'value':p[3]}]
+            p[0] = [{p[1]: p[3]}]
 
 
     ###################################################
     ############         insert            ############
     ###################################################
     def p_insert(self, p):
-        """ insert : INSERT INTO table "(" items ")" VALUES values
+        """ insert : INSERT INTO NAME "(" items ")" VALUES values
         """
         p[0] = {
             'method': p[1],
@@ -99,7 +100,7 @@ class Parser:
     ############         delete            ############
     ###################################################
     def p_delete(self, p):
-        """ delete : DELETE FROM tables where
+        """ delete : DELETE FROM NAME where
         """
         p[0] = {
             'method': p[1],
@@ -149,22 +150,13 @@ class Parser:
         }
 
     def p_tables(self, p):
-        """ tables : table
-                   | table COMMA tables
+        """ tables : NAME
+                   | NAME COMMA tables
         """
         if len(p) == 2:
             p[0] = [p[1]]
         else:
             p[0] = [p[1]] + p[3]
-
-    def p_table(self, p):
-        """ table : string
-                  | string "." string
-        """
-        if len(p) == 2:
-            p[0] = p[1]
-        else:
-            p[0] = p[1] + '.' + p[3]
 
 
     def p_where(self, p):
@@ -376,7 +368,7 @@ class Parser:
     ############         create            ############
     ###################################################
     def p_create(self, p):
-        """ create : CREATE TABLE table "(" create_columns ")" with
+        """ create : CREATE TABLE NAME "(" create_columns ")" with
         """
         p[0] = {
             'method': p[1],
@@ -471,17 +463,33 @@ class Parser:
             'table': p[3]
         }
 
-
     ###################################################
     ############         desc              ############
     ###################################################
     def p_desc(self, p):
-        """ desc : DESC tables
+        """ desc : DESC NAME
         """
         p[0] = {
             'method': p[1],
             'table': p[2]
         }
+
+    ###################################################
+    ############         show              ############
+    ###################################################
+    def p_show(self, p):
+        """ show : SHOW TABLES LIKE item
+                 | SHOW TABLES
+        """
+        p[0] = {
+            'method': p[1],
+            'option': p[2],
+            'regex': ''
+        }
+        if len(p) > 3:
+            p[0]['regex'] = p[4]
+
+
 
 
     # empty return None

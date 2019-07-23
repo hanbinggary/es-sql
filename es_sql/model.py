@@ -9,7 +9,7 @@ class Index:
 
 # doc_type
 class DocType:
-    def __init__(self, name):
+    def __init__(self, name=None):
         self.name = name
 
 

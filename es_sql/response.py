@@ -111,3 +111,28 @@ class Hits:
                 sour[f] = data[f]
 
             yield sour
+
+
+class MappingRes:
+    @staticmethod
+    def to_result(text, index):
+        result = []
+
+        mappings = text[index]['mappings']
+        for tp, properties in mappings.items():
+            prop = properties['properties']
+            for field, opts in prop.items():
+                field_type = 'keyword' if not opts.get('index') else 'text'
+                if 'fields' in opts:
+                    field_type = 'keyword/text'
+
+                d = {
+                    'index': index,
+                    'doc_type': tp,
+                    'field': field,
+                    'type': field_type
+                }
+
+                result.append(d)
+        return result
+

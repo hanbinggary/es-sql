@@ -26,11 +26,11 @@ class Lexer:
 
         'create': 'CREATE',
         'table' : 'TABLE',
+        'tables': 'TABLES',
         'drop'  : 'DROP',
         'show'  : 'SHOW',
         'with'  : 'WITH',
 
-        'as'    : 'AS',
         'and'   : 'AND',
         'or'    : 'OR',
         'in'    : 'IN',
@@ -84,7 +84,8 @@ class Lexer:
                              debug=debug)
 
     def t_NAME(self, t):
-        r"[_a-zA-Z][_a-zA-Z0-9]*|[\u4e00-\u9fa5]+"
+        # .是为了raw字段查询 col.raw
+        r"[_a-zA-Z][\._a-zA-Z0-9]*|[\u4e00-\u9fa5]+"
         t.type = Lexer.reserved.get(t.value.lower(), 'NAME')
         if t.type != 'NAME':
             t.value = t.value.upper()

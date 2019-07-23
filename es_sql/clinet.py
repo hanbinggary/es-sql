@@ -31,7 +31,6 @@ class Client:
 c = Client(host='10.68.120.106', port=9204)
 
 ### select
-
 # print(c.execute('select _index,_type,_id,* from test1es.base'))
 # print(c.execute('select * from test1es.base'))
 # print(c.execute('select count(*) from test1es.base'))
@@ -46,10 +45,10 @@ c = Client(host='10.68.120.106', port=9204)
 # print(c.execute('select city,count1,count(*) from test1es.base group by city,count1 having count(city)>0'))
 # print(c.execute('select sum(count2) from test1es where city="杭州"'))
 # print(c.execute('select * from test1es order by count1'))
-
+# print(c.execute('select * from test56es where addr.raw="中国上海"'))
+# print(c.execute('select * from test56es'))
 
 ### scan
-
 # for i in c.execute('scan _index,* from test1es'):
 #     print(i)
 # for i in c.execute('scan * from test1es limit 4'):
@@ -61,16 +60,28 @@ c = Client(host='10.68.120.106', port=9204)
 # for i in c.execute('scan * from test1es where city=杭州 order by count2 desc'):
 #     print(i)
 
-### create table
+### insert
+# c.execute('insert into test56es.base2(user,age,addr) values("cj",14,"中国杭州"),("cj2",15,"中国上海")')
+# c.execute('insert into test56es(_id,user,age,addr) values("awsaf","cj",14,"中国杭州"),("adfgasdf","cj2",15,"中国上海")')
 
+### update
+# c.execute('update test56es set user="hh",addr="北京" where id="AWwc9ql3AhVzU0wolGnM"')
+
+### delete
+# c.execute('delete from test56es where id="adfgasdf"')
+
+### create table
 # c.execute('create table test56es(user text {analyzer=english}, age long,addr keyword/text) with 1,1')
 
 ### drop table
-# c.execute('drop table test55es')
+# c.execute('drop table test56es')
 # c.execute('drop table test55es,test56es')
 
-### insert
-c.execute('insert into test55es(user,age,addr) values("cj",14,"中国杭州"),("cj2",15,"中国上海")')
+### desc
+# c.execute('desc test56es')
 
+### show
+# print(c.execute('show tables'))
+print(c.execute('show tables like "%test%"'))
 
 

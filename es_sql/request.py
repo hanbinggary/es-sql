@@ -1,4 +1,6 @@
-from elasticsearch.helpers import scan
+import re
+
+from elasticsearch.helpers import scan, bulk
 
 from es_sql.response import *
 from es_sql.dsl import *
@@ -60,6 +62,72 @@ class Request:
         return resp.iter_source(sfields, cfields, size)
 
     @staticmethod
+    def insert(es, parsed):
+        s = Insert(parsed)
+
+        columns = s.fields()
+        values = s.values()
+
+        datas = [dict(zip(columns, value)) for value in values]
+
+        def iteritem(items):
+            for item in items:
+                sour = {
+                    '_index': s.index().name,
+                    '_type': s.doc_type().name
+                }
+
+                if '_id' in item:
+                    sour['_id'] = item['_id']
+                    del item['_id']
+
+                sour['_source'] = item
+
+                yield sour
+
+        text = bulk(es, iteritem(datas))
+        print(text)
+
+    @staticmethod
+    def delete(es, parsed):
+        s = Delete(parsed)
+
+        index = s.index().name
+        doc_type = s.doc_type().name
+        id = s.id()
+
+        text = es.delete(
+            index=index,
+            doc_type=doc_type,
+            id=id
+        )
+        print(text)
+        # es5才可以使用
+        # text = es.delete_by_query(
+        #     index=index,
+        #     doc_type=doc_type,
+        #     body=dsl
+        # )
+        # print(text)
+
+    @staticmethod
+    def update(es, parsed):
+        # todo 支持update_by_query
+        s = Update(parsed)
+
+        index = s.index().name
+        doc_type = s.doc_type().name
+        id = s.id()
+
+        text = es.update(
+            index=index,
+            doc_type=doc_type,
+            id=id,
+            body={'doc': s.reset_value()}
+        )
+        print(text)
+
+    @staticmethod
     def create(es, parsed):
         s = Create(parsed)
 
@@ -85,10 +153,6 @@ class Request:
         print(text)
 
     @staticmethod
-    def insert(es, parsed):
-        pass
-
-    @staticmethod
     def drop(es, parsed):
         s = Drop(parsed)
 
@@ -97,6 +161,30 @@ class Request:
         )
         print(text)
 
+    @staticmethod
+    def desc(es, parsed):
+        s = Desc(parsed)
+
+        text = es.indices.get_mapping(
+            index=s.index().name,
+            doc_type=s.doc_type().name
+        )
+        print(MappingRes.to_result(text, s.index().name))
+
+    @staticmethod
+    def show(es, parsed):
+        s = Show(parsed)
+
+        opt = s.opt()
+        reg = s.reg()
+
+        if opt == 'tables':
+            text = es.cat.indices()
+            if reg:
+                pattern = re.compile(reg)
+                return list(filter(lambda x: re.search(pattern, x['index']), text))
+            return text
+
 
 
 
@@ -104,7 +192,12 @@ SQLCLASS = {
     'SELECT': Request.select,
     'SCAN': Request.scan,
     'INSERT': Request.insert,
+    'DELETE': Request.delete,
+    'UPDATE': Request.update,
 
     'CREATE': Request.create,
-    'DROP': Request.drop
+    'DROP': Request.drop,
+    'DESC': Request.desc,
+
+    'SHOW': Request.show
 }
