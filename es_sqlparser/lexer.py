@@ -50,7 +50,7 @@ class Lexer:
         'long'  : 'LONG',
         'integer': 'INTEGER',
         'short' : 'SHORT',
-        'type'  : 'TYPE',
+        'byte'  : 'BYTE',
         'double': 'DOUBLE',
         'float' : 'FLOAT',
         'date'  : 'DATE',

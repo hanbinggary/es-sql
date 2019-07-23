@@ -349,6 +349,32 @@ class Bucket:
         }
 
 
+class MappingMultiFields:
+
+    @staticmethod
+    def to_dict():
+        return {'fields': {'raw': {'type': 'string', 'index': 'not_analyzed'}}}
+
+
+class MappingField:
+    '''
+    todo 支持更多的参数
+    '''
+
+    def __init__(self, name, type, analyzer='standard'):
+        self.name = name
+        self.type = type
+        self.analyzer = analyzer
+
+    def to_dict(self):
+        if isinstance(self.type, list):
+            mf = MappingMultiFields.to_dict()
+            return {self.name: {'type': 'string', **mf}}
+        else:
+            if self.type == 'text':
+                return {self.name: {'type': 'string'}}
+            else:
+                return {self.name: {'type': 'string', 'index': 'not_analyzed'}}
 
 
 

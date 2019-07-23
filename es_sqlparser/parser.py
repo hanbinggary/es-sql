@@ -405,7 +405,7 @@ class Parser:
                         | LONG
                         | INTEGER
                         | SHORT
-                        | TYPE
+                        | BYTE
                         | DOUBLE
                         | FLOAT
                         | DATE
@@ -441,7 +441,7 @@ class Parser:
                   | empty
         """
         if len(p) > 2:
-            p[0] = {p[1]: p[3]}
+            p[0] = {p[1].lower(): p[3]}
         else:
             p[0] = {}
 
@@ -455,7 +455,7 @@ class Parser:
         """ with : WITH numbers
                  | empty
         """
-        p[0] = []
+        p[0] = [5, 1]
         if len(p) > 2:
             p[0] = p[2]
 

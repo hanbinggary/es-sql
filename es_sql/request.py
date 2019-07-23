@@ -61,12 +61,50 @@ class Request:
 
     @staticmethod
     def create(es, parsed):
+        s = Create(parsed)
+
+        index = s.index().name
+        doc_type = s.doc_type().name
+
+        body = {
+            'mappings': {
+                doc_type: {
+                    'properties': s.fields()
+                }
+            },
+            'settings': {
+                'number_of_shards': s.shards(),
+                'number_of_replicas': s.replicas()
+            }
+        }
+
+        text = es.indices.create(
+            index=index,
+            body=body
+        )
+        print(text)
+
+    @staticmethod
+    def insert(es, parsed):
         pass
+
+    @staticmethod
+    def drop(es, parsed):
+        s = Drop(parsed)
+
+        text = es.indices.delete(
+            index=s.index().name
+        )
+        print(text)
+
+
 
 
 SQLCLASS = {
     'SELECT': Request.select,
     'SCAN': Request.scan,
+    'INSERT': Request.insert,
 
-    'CREATE': Request.create
+    'CREATE': Request.create,
+    'DROP': Request.drop
 }

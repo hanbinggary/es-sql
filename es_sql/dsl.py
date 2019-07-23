@@ -147,3 +147,56 @@ class Scan(Select):
 
     def size(self):
         return self.parsed['limit']
+
+
+class Create(Select):
+    def __init__(self, parsed):
+        super(Create, self).__init__(parsed)
+
+    def fields(self):
+        column = self.parsed['column']
+        prop = {}
+        for col in column:
+            name, opt = getkv(col)
+            tp = opt['type']
+            prop.update(MappingField(name, tp).to_dict())
+        return prop
+
+    def index(self):
+        table = self.parsed['table']
+        return Index(table.split('.')[0])
+
+    def doc_type(self):
+        table = self.parsed['table']
+        if '.' not in table:
+            dt = 'base'
+        else:
+            dt = table.split('.')[1]
+        return DocType(dt)
+
+    def shards(self):
+        return self.parsed['with'][0]
+
+    def replicas(self):
+        return self.parsed['with'][1]
+
+
+class Drop:
+    def __init__(self, parsed):
+        self.parsed = parsed
+
+    def index(self):
+        table = self.parsed['table']
+        return Index(table)
+
+
+class Insert:
+    def __init__(self, parsed):
+        self.parsed = parsed
+
+    def index(self):
+        table = self.parsed['table']
+        return Index(table)
+
+    def values(self):
+        values = self.parsed['values']

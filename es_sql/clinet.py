@@ -3,7 +3,7 @@ from elasticsearch import Elasticsearch
 from es_sqlparser import parse_handle, do_test
 from es_sql.request import SQLCLASS
 
-do_test()
+# do_test()
 
 class Client:
 
@@ -30,6 +30,8 @@ class Client:
 
 c = Client(host='10.68.120.106', port=9204)
 
+### select
+
 # print(c.execute('select _index,_type,_id,* from test1es.base'))
 # print(c.execute('select * from test1es.base'))
 # print(c.execute('select count(*) from test1es.base'))
@@ -45,6 +47,9 @@ c = Client(host='10.68.120.106', port=9204)
 # print(c.execute('select sum(count2) from test1es where city="杭州"'))
 # print(c.execute('select * from test1es order by count1'))
 
+
+### scan
+
 # for i in c.execute('scan _index,* from test1es'):
 #     print(i)
 # for i in c.execute('scan * from test1es limit 4'):
@@ -56,7 +61,16 @@ c = Client(host='10.68.120.106', port=9204)
 # for i in c.execute('scan * from test1es where city=杭州 order by count2 desc'):
 #     print(i)
 
-c.execute('create table test5es(user keyword {analyzer=english},addr keyword/text) with 5,1')
+### create table
+
+# c.execute('create table test56es(user text {analyzer=english}, age long,addr keyword/text) with 1,1')
+
+### drop table
+# c.execute('drop table test55es')
+# c.execute('drop table test55es,test56es')
+
+### insert
+c.execute('insert into test55es(user,age,addr) values("cj",14,"中国杭州"),("cj2",15,"中国上海")')
 
 
 
