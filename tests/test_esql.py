@@ -1,37 +1,10 @@
-from elasticsearch import Elasticsearch
-
-from es_sqlparser import parse_handle, do_test
-from es_sql.request import SQLCLASS
-
-# do_test()
-
-class Client:
-
-    def __init__(self, **kwargs):
-        self.es = Elasticsearch(**kwargs)
-
-    def sql_format(self, sql):
-        if not sql.endswith(';'):
-            sql = sql + ';'
-        return sql
-
-    def parse(self, sql):
-        return parse_handle(sql)
-
-    def execute(self, sql):
-        sql = self.sql_format(sql)
-        parsed = self.parse(sql)
-        print(parsed)
-
-        method = parsed['method']
-
-        return SQLCLASS[method](self.es, parsed)
+from es_sql2 import Client
 
 
 c = Client(host='10.68.120.106', port=9204)
 
 ### select
-# print(c.execute('select _index,_type,_id,* from test1es.base'))
+# print(c.execute('select _index,_type,_id,* from test1es'))
 # print(c.execute('select * from test1es.base'))
 # print(c.execute('select count(*) from test1es.base'))
 # print(c.execute('select count(distinct(city)) from test1es.base'))
@@ -49,7 +22,7 @@ c = Client(host='10.68.120.106', port=9204)
 # print(c.execute('select * from test56es'))
 
 ### scan
-# for i in c.execute('scan _index,* from test1es'):
+# for i in c.execute('scan _index,* from test5666es'):
 #     print(i)
 # for i in c.execute('scan * from test1es limit 4'):
 # #     print(i)
@@ -62,26 +35,24 @@ c = Client(host='10.68.120.106', port=9204)
 
 ### insert
 # c.execute('insert into test56es.base2(user,age,addr) values("cj",14,"中国杭州"),("cj2",15,"中国上海")')
-# c.execute('insert into test56es(_id,user,age,addr) values("awsaf","cj",14,"中国杭州"),("adfgasdf","cj2",15,"中国上海")')
+# print(c.execute('insert into test56es(_id,user,age,addr) values("awsaf","cj",14,"中国杭州"),("adfgasdf","cj2","SF","中国上海")'))
 
 ### update
-# c.execute('update test56es set user="hh",addr="北京" where id="AWwc9ql3AhVzU0wolGnM"')
+# print(c.execute('update test56es set user="hh",addr="北" where id="adfgasdqrf"'))
 
 ### delete
-# c.execute('delete from test56es where id="adfgasdf"')
+# print(c.execute('delete from test56es where id="adfgasdf"'))
 
-### create table
-# c.execute('create table test56es(user text {analyzer=english}, age long,addr keyword/text) with 1,1')
+## create table
+# print(c.execute('create table test56es(user text {analyzer=english}, age long,addr keyword/text) with 1,1'))
 
 ### drop table
-# c.execute('drop table test56es')
-# c.execute('drop table test55es,test56es')
+# print(c.execute('drop table test59es'))
+# print(c.execute('drop table test57es,test58es'))
 
 ### desc
-# c.execute('desc test56es')
+# print(c.execute('desc test90es'))
 
 ### show
 # print(c.execute('show tables'))
-print(c.execute('show tables like "%test%"'))
-
-
+# print(c.execute('show tables like "%test%"'))
