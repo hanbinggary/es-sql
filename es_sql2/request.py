@@ -2,8 +2,9 @@ import re
 
 from elasticsearch.helpers import scan, bulk
 
-from es_sql.response import *
-from es_sql.dsl import *
+from es_sql2.response import *
+from es_sql2.dsl import *
+from es_sql2.utils import error_handle
 
 
 class Request:
@@ -11,22 +12,39 @@ class Request:
     common_fields = ('_index', '_type', '_id')
 
     @staticmethod
+    def sep_fileds(fields):
+        sf = []
+        cf = []
+        for field in fields:
+            if field in Request.common_fields:
+                cf.append(field)
+            else:
+                sf.append(field)
+        return sf, cf
+
+    @staticmethod
+    @error_handle
     def select(es, parsed):
         s = Select(parsed)
 
         fields, aggfields, group = s.fields()
-
-        sfields = [field for field in fields if field not in Request.common_fields]
-        cfields = [field for field in fields if field in Request.common_fields]
-        source = {'_source': sfields}
-        dsl = {**source, **s.query(), **s.agg(aggfields), **s.sort(), **s.offset(), **s.size()}
+        sf, cf = Request.sep_fileds(fields)
+        source = {'_source': sf}
+        dsl = {
+            **source,
+            **s.query(),
+            **s.agg(aggfields),
+            **s.sort(),
+            **s.offset(),
+            **s.size()
+        }
 
         text = es.search(
             index=s.index().name,
             doc_type=s.doc_type().name,
             body=dsl
         )
-        resp = Response(text, aggfields, sfields, cfields, group, s.return_rows)
+        resp = Response(text, aggfields, sf, cf, group, s.return_rows)
         return resp.query_result()
 
     @staticmethod
@@ -38,9 +56,8 @@ class Request:
         s = Scan(parsed)
 
         fields = s.fields()
-        sfields = [field for field in fields if field not in Request.common_fields]
-        cfields = [field for field in fields if field in Request.common_fields]
-        source = {'_source': sfields}
+        sf, cf = Request.sep_fileds(fields)
+        source = {'_source': sf}
         size = s.size()
         sort = s.sort()
         if sort['sort']:
@@ -59,9 +76,10 @@ class Request:
         )
 
         resp = Hits(text)
-        return resp.iter_source(sfields, cfields, size)
+        return resp.iter_source(sf, cf, size)
 
     @staticmethod
+    @error_handle
     def insert(es, parsed):
         s = Insert(parsed)
 
@@ -86,9 +104,10 @@ class Request:
                 yield sour
 
         text = bulk(es, iteritem(datas))
-        print(text)
+        return text
 
     @staticmethod
+    @error_handle
     def delete(es, parsed):
         s = Delete(parsed)
 
@@ -101,7 +120,7 @@ class Request:
             doc_type=doc_type,
             id=id
         )
-        print(text)
+        return text
         # es5才可以使用
         # text = es.delete_by_query(
         #     index=index,
@@ -111,6 +130,7 @@ class Request:
         # print(text)
 
     @staticmethod
+    @error_handle
     def update(es, parsed):
         # todo 支持update_by_query
         s = Update(parsed)
@@ -125,9 +145,10 @@ class Request:
             id=id,
             body={'doc': s.reset_value()}
         )
-        print(text)
+        return text
 
     @staticmethod
+    @error_handle
     def create(es, parsed):
         s = Create(parsed)
 
@@ -150,28 +171,36 @@ class Request:
             index=index,
             body=body
         )
-        print(text)
+
+        return text
 
     @staticmethod
+    @error_handle
     def drop(es, parsed):
         s = Drop(parsed)
 
         text = es.indices.delete(
             index=s.index().name
         )
-        print(text)
+
+        return text
 
     @staticmethod
+    @error_handle
     def desc(es, parsed):
         s = Desc(parsed)
 
+        index = s.index().name
+        doc_type = s.doc_type().name
+
         text = es.indices.get_mapping(
-            index=s.index().name,
-            doc_type=s.doc_type().name
+            index=index,
+            doc_type=doc_type
         )
-        print(MappingRes.to_result(text, s.index().name))
+        return MappingRes.to_result(text, index)
 
     @staticmethod
+    @error_handle
     def show(es, parsed):
         s = Show(parsed)
 
@@ -184,8 +213,6 @@ class Request:
                 pattern = re.compile(reg)
                 return list(filter(lambda x: re.search(pattern, x['index']), text))
             return text
-
-
 
 
 SQLCLASS = {

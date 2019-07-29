@@ -1,3 +1,4 @@
+from elasticsearch.exceptions import RequestError
 
 
 class ESQLException(Exception):
@@ -21,5 +22,11 @@ class IndexException(ESQLException):
 class FieldException(ESQLException):
     """
     字段异常
+    """
+
+
+class IndexAlreadyExistException(ESQLException):
+    """
+    索引不存在
     """
 

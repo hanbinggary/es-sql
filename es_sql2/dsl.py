@@ -1,5 +1,5 @@
-from es_sql.utils import getkv
-from es_sql.model import *
+from es_sql2.utils import getkv
+from es_sql2.model import *
 
 
 class QueryDSL:
@@ -275,6 +275,7 @@ class Show:
         elif reg.endswith('%'):
             reg = '^' + reg.strip('%')
         else:
-            reg = '^' + reg + '$'
+            if reg:
+                reg = '^' + reg + '$'
 
         return reg
