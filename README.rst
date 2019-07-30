@@ -19,7 +19,7 @@ Getting Started
     >>> from es_sql2 import Client
     >>> sql = 'select * from test1es;'
     >>> esql = Client('10.68.120.106:9204')
-    >>> print(esql.execute(sql))
+    >>> esql.execute(sql)
 
 SQL syntax supported
 ---------------------
