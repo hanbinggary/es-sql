@@ -7,8 +7,8 @@ Installation
 ------------
 .. code-block:: bash
 
-    $ git clone https://github.com/yasinasama/esql-python.git
-    $ cd esql-python
+    $ git clone https://github.com/yasinasama/es-sql.git
+    $ cd es-sql
     $ python setup install
 
 
@@ -16,15 +16,10 @@ Getting Started
 ---------------
 .. code-block:: pycon
 
-    >>> from esql.client import ESQL
+    >>> from es_sql2 import Client
     >>> sql = 'select * from blog;'
-    >>> esql = ESQL('127.0.0.1:9200')
+    >>> esql = Client('10.68.120.106:9204')
     >>> print(esql.execute(sql))
-
-    # If you just want to get the DSL sended
-    # query will not be executed actually
-    >>> print(esql.execute(sql,debug=True))
-
 
 SQL syntax supported
 -------------------

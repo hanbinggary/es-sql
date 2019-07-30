@@ -3,21 +3,21 @@
 from setuptools import setup
 
 
-packages = ['es_sql']
+packages = ['es_sql2']
 
 requires = [
-    'elasticsearch',
+    'elasticsearch>=2.0.0,<3.0.0',
     'ply'
 ]
 
 setup(
-    name = "es_sql-python",
-    version = "0.1",
-    author = "yasinasama",
-    author_email = "yasinasama01@gmail.com",
-    description = "Elasticsearch SQL parser.",
-    license = "MIT",
-    keywords = "Elasticsearch SQL",
-    install_requires = requires,
+    name="es_sql",
+    version="0.1",
+    author="yasinasama",
+    author_email="yasinasama01@gmail.com",
+    description="SQL FOR Elasticsearch",
+    license="MIT",
+    keywords="Elasticsearch SQL",
+    install_requires=requires,
     packages=packages
 )
