@@ -6,8 +6,8 @@ from es_sql2.request import SQLCLASS
 
 class Client:
 
-    def __init__(self, **kwargs):
-        self.es = Elasticsearch(**kwargs)
+    def __init__(self, hosts, **kwargs):
+        self.es = Elasticsearch(hosts, **kwargs)
 
     def sql_format(self, sql):
         if not sql.endswith(';'):
