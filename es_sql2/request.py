@@ -121,13 +121,6 @@ class Request:
             id=id
         )
         return text
-        # es5才可以使用
-        # text = es.delete_by_query(
-        #     index=index,
-        #     doc_type=doc_type,
-        #     body=dsl
-        # )
-        # print(text)
 
     @staticmethod
     @error_handle
