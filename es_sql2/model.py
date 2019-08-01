@@ -235,7 +235,7 @@ class HBool:
     def __init__(self, bps=None, script=''):
         # buckets_path
         self.bps = bps
-        self.script = script
+        self.script = script.replace('=', '==')
 
     def __and__(self, other):
         q = self._new()
@@ -373,8 +373,10 @@ class MappingField:
         else:
             if self.type == 'text':
                 return {self.name: {'type': 'string'}}
-            else:
+            elif self.type == 'keyword':
                 return {self.name: {'type': 'string', 'index': 'not_analyzed'}}
+            else:
+                return {self.name: {'type': self.type}}
 
 
 

@@ -268,12 +268,12 @@ class Show:
     def reg(self):
         reg = self.parsed['regex']
 
-        if reg.startswith('%') and reg.endswith('%'):
-            reg = reg.strip('%')
-        elif reg.startswith('%'):
-            reg = reg.strip('%') + '$'
-        elif reg.endswith('%'):
-            reg = '^' + reg.strip('%')
+        if reg.startswith('*') and reg.endswith('*'):
+            reg = reg.strip('*')
+        elif reg.startswith('*'):
+            reg = reg.strip('*') + '$'
+        elif reg.endswith('*'):
+            reg = '^' + reg.strip('*')
         else:
             if reg:
                 reg = '^' + reg + '$'
