@@ -38,10 +38,9 @@ class Request:
             **s.offset(),
             **s.size()
         }
-
         text = es.search(
-            index=s.index().name,
-            doc_type=s.doc_type().name,
+            index=s.index,
+            doc_type=s.doc_type,
             body=dsl
         )
         resp = Response(text, aggfields, sf, cf, group, s.return_rows)
@@ -70,8 +69,8 @@ class Request:
         text = scan(
             es,
             query=dsl,
-            index=s.index().name,
-            doc_type=s.doc_type().name,
+            index=s.index,
+            doc_type=s.doc_type,
             preserve_order=preserve_order
         )
 
@@ -91,8 +90,8 @@ class Request:
         def iteritem(items):
             for item in items:
                 sour = {
-                    '_index': s.index().name,
-                    '_type': s.doc_type().name
+                    '_index': s.index,
+                    '_type': s.doc_type
                 }
 
                 if '_id' in item:
@@ -111,14 +110,10 @@ class Request:
     def delete(es, parsed):
         s = Delete(parsed)
 
-        index = s.index().name
-        doc_type = s.doc_type().name
-        id = s.id()
-
         text = es.delete(
-            index=index,
-            doc_type=doc_type,
-            id=id
+            index=s.index,
+            doc_type=s.doc_type,
+            id=s.id
         )
         return text
 
@@ -128,14 +123,10 @@ class Request:
         # todo 支持update_by_query
         s = Update(parsed)
 
-        index = s.index().name
-        doc_type = s.doc_type().name
-        id = s.id()
-
         text = es.update(
-            index=index,
-            doc_type=doc_type,
-            id=id,
+            index=s.index,
+            doc_type=s.doc_type,
+            id=s.id,
             body={'doc': s.reset_value()}
         )
         return text
@@ -145,8 +136,8 @@ class Request:
     def create(es, parsed):
         s = Create(parsed)
 
-        index = s.index().name
-        doc_type = s.doc_type().name
+        index = s.index
+        doc_type = s.doc_type
 
         body = {
             'mappings': {
@@ -173,7 +164,7 @@ class Request:
         s = Drop(parsed)
 
         text = es.indices.delete(
-            index=s.index().name
+            index=s.index
         )
 
         return text
@@ -183,14 +174,14 @@ class Request:
     def desc(es, parsed):
         s = Desc(parsed)
 
-        index = s.index().name
-        doc_type = s.doc_type().name
+        index = s.index
+        doc_type = s.doc_type
 
         text = es.indices.get_mapping(
             index=index,
             doc_type=doc_type
         )
-        return MappingRes.to_result(text, index)
+        return MappingRes.to_result(text, index[0])
 
     @staticmethod
     @error_handle

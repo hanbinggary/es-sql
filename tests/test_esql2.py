@@ -11,7 +11,9 @@ c = Client('10.68.120.106:9204')
 
 
 ### insert
-# print(c.execute('insert into people(_id,user,age,addr,createtime,weight) values(3,"王五",29,"中国杭州",1564627410924,111.50),(4,"赵六",37,"中国宁波",1564611701824,109.77)'))
+# print(c.execute('insert into people(_id,user,age,addr,createtime,weight) values(1,"张三",20,"中国杭州",1564627010924,110.90),(2,"李四",32,"中国上海",1564611711824,108.77)'))
+# print(c.execute('insert into people(_id,user,age,addr,createtime,weight) values(3,"王五",29,"中国杭州",1564627410924,111.50),(4,"赵六",37,"中国宁波",1564611701824,109.37)'))
+# print(c.execute('insert into people(_id,user,age,addr,createtime,weight) values(5,"tom",24,"美国纽约",1564627420924,141.50),(6,"mary",27,"英国伦敦",1564611702824,105.80)'))
 
 
 ### select
@@ -62,7 +64,7 @@ c = Client('10.68.120.106:9204')
 # print(c.execute('delete from people where id="1"'))
 
 ### drop table
-# print(c.execute('drop table people'))
+# print(c.execute('drop table test66es'))
 
 ### desc
 # print(c.execute('desc people'))

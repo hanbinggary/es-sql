@@ -75,10 +75,26 @@ class AggDSL:
         return self.build(bkfield)
 
 
-class Select:
+class Base:
 
     def __init__(self, parsed):
         self.parsed = parsed
+
+    @property
+    def index(self):
+        tables = self.parsed['table']
+        return Index(tables).name
+
+    @property
+    def doc_type(self):
+        tables = self.parsed['table']
+        return DocType(tables).name
+
+
+class Select(Base):
+
+    def __init__(self, parsed):
+        super().__init__(parsed)
 
         self.return_rows = False
 
@@ -113,14 +129,6 @@ class Select:
         conditions = self.parsed['where']
         return QueryDSL(conditions).to_dict()
 
-    def index(self):
-        tables = self.parsed['table']
-        return Index([table.split('.')[0] for table in tables])
-
-    def doc_type(self):
-        tables = self.parsed['table']
-        return DocType([table.split('.')[1] for table in tables if '.' in table])
-
     def sort(self):
         order = self.parsed['order']
         return Sort(order).to_dict()
@@ -140,7 +148,7 @@ class Select:
 
 class Scan(Select):
     def __init__(self, parsed):
-        super(Scan, self).__init__(parsed)
+        super().__init__(parsed)
 
     def fields(self):
         return self.parsed['column']
@@ -149,7 +157,7 @@ class Scan(Select):
         return self.parsed['limit']
 
 
-class Create(Select):
+class Create(Base):
     def __init__(self, parsed):
         super(Create, self).__init__(parsed)
 
@@ -162,18 +170,6 @@ class Create(Select):
             prop.update(MappingField(name, tp).to_dict())
         return prop
 
-    def index(self):
-        table = self.parsed['table']
-        return Index(table.split('.')[0])
-
-    def doc_type(self):
-        table = self.parsed['table']
-        if '.' not in table:
-            dt = 'base'
-        else:
-            dt = table.split('.')[1]
-        return DocType(dt)
-
     def shards(self):
         return self.parsed['with'][0]
 
@@ -181,40 +177,15 @@ class Create(Select):
         return self.parsed['with'][1]
 
 
-class Drop:
-    def __init__(self, parsed):
-        self.parsed = parsed
-
-    def index(self):
-        table = self.parsed['table']
-        return Index(table)
+class Drop(Base):
+    pass
 
 
-class Desc(Drop):
-    def doc_type(self):
-        table = self.parsed['table']
-        if '.' not in table:
-            dt = None
-        else:
-            dt = table.split('.')[1]
-        return DocType(dt)
+class Desc(Base):
+    pass
 
 
-class Insert:
-    def __init__(self, parsed):
-        self.parsed = parsed
-
-    def index(self):
-        table = self.parsed['table']
-        return Index(table.split('.')[0])
-
-    def doc_type(self):
-        table = self.parsed['table']
-        if '.' not in table:
-            dt = 'base'
-        else:
-            dt = table.split('.')[1]
-        return DocType(dt)
+class Insert(Base):
 
     def fields(self):
         return [Field(column).name for column in self.parsed['column']]
@@ -226,22 +197,9 @@ class Insert:
         return values
 
 
-class Delete:
-    def __init__(self, parsed):
-        self.parsed = parsed
+class Delete(Base):
 
-    def index(self):
-        table = self.parsed['table']
-        return Index(table.split('.')[0])
-
-    def doc_type(self):
-        table = self.parsed['table']
-        if '.' not in table:
-            dt = 'base'
-        else:
-            dt = table.split('.')[1]
-        return DocType(dt)
-
+    @property
     def id(self):
         conditions = self.parsed['where']
         if '=' in conditions and Field(getkv(conditions['='])[0]).name == '_id':
@@ -251,6 +209,7 @@ class Delete:
 
 
 class Update(Delete):
+
     def reset_value(self):
         values = {}
         for rv in self.parsed['column']:
@@ -258,9 +217,7 @@ class Update(Delete):
         return values
 
 
-class Show:
-    def __init__(self, parsed):
-        self.parsed = parsed
+class Show(Base):
 
     def opt(self):
         return self.parsed['option'].lower()

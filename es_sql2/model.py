@@ -4,13 +4,27 @@ import operator
 # index
 class Index:
     def __init__(self, name):
-        self.name = name
+        if isinstance(name, str):
+            name = [name]
+
+        self.name = [n.split('.')[0] for n in name]
 
 
 # doc_type
 class DocType:
-    def __init__(self, name=None):
-        self.name = name
+    def __init__(self, name):
+        if isinstance(name, str):
+            name = [name]
+
+        doc_types = []
+        for n in name:
+            if '.' not in n:
+                dt = 'base'
+            else:
+                dt = n.split('.')[1]
+            doc_types.append(dt)
+
+        self.name = doc_types
 
 
 class Sort:

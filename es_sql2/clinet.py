@@ -20,6 +20,7 @@ class Client:
     def execute(self, sql):
         sql = self.sql_format(sql)
         parsed = self.parse(sql)
+        print(parsed)
 
         method = parsed['method']
 
