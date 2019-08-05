@@ -4,6 +4,7 @@ from es_sqlparser import parse_handle
 from es_sql2.request import SQLCLASS
 
 
+
 class Client:
 
     def __init__(self, hosts, **kwargs):
