@@ -1,7 +1,9 @@
 es-sql
 ============
 
-Elasticsearch SQL parser
+Elasticsearch SQL
+
+es5.x
 
 Installation
 ------------

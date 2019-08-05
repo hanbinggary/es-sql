@@ -2,9 +2,9 @@ import re
 
 from elasticsearch.helpers import scan, bulk
 
-from es_sql5.response import *
-from es_sql5.dsl import *
-from es_sql5.utils import error_handle
+from es_sql.response import *
+from es_sql.dsl import *
+from es_sql.utils import error_handle
 
 
 class Request:
