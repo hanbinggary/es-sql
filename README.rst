@@ -1,4 +1,4 @@
-esql-python
+es-sql
 ============
 
 Elasticsearch SQL parser

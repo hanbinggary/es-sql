@@ -1,8 +1,8 @@
-from es_sql2 import Client
+from es_sql5 import Client
 from es_sqlparser import do_test
 
 # do_test()
-c = Client('10.68.120.106:9204')
+c = Client('10.68.23.89:9205')
 
 ## create table
 # 创建索引不带doc_type时默认为people.base
@@ -14,6 +14,8 @@ c = Client('10.68.120.106:9204')
 # print(c.execute('insert into people(_id,user,age,addr,createtime,weight) values(1,"张三",20,"中国杭州",1564627010924,110.90),(2,"李四",32,"中国上海",1564611711824,108.77)'))
 # print(c.execute('insert into people(_id,user,age,addr,createtime,weight) values(3,"王五",29,"中国杭州",1564627410924,111.50),(4,"赵六",37,"中国宁波",1564611701824,109.37)'))
 # print(c.execute('insert into people(_id,user,age,addr,createtime,weight) values(5,"tom",24,"美国纽约",1564627420924,141.50),(6,"mary",27,"英国伦敦",1564611702824,105.80)'))
+# print(c.execute('insert into people(_id,user,age,addr,createtime,weight) values(1,"tom",24,"美国纽约",1564627420924,141.50)'))
+# print(c.execute('insert into people(_id,user,age,addr,createtime,weight) values(10,"tom",24,"美国纽约",1564627420924,141.50)'))
 
 
 ### select
@@ -23,9 +25,9 @@ c = Client('10.68.120.106:9204')
 # print(c.execute('select count(*) from people'))
 # print(c.execute('select count(distinct(user.raw)) from people'))
 
-# print(c.execute('select * from people where age=43'))
+# print(c.execute('select * from people where age=24'))
 # print(c.execute('select * from people where user.raw="张三"'))
-# print(c.execute('select * from people where age=43 and user.raw="王天"'))
+# print(c.execute('select * from people where age=43 and user.raw="王五"'))
 # print(c.execute('select age from people where age>=32'))
 # print(c.execute('select * from people where user.raw like "张*"'))
 # print(c.execute('select * from people where user.raw in (张三,李四)'))
@@ -61,10 +63,11 @@ c = Client('10.68.120.106:9204')
 # print(c.execute('update people set user="ll",addr="广州" where id="1"'))
 
 ### delete
-# print(c.execute('delete from people where id="1"'))
+# print(c.execute('delete from people where id=1'))
+# print(c.execute('delete from people where age=24'))
 
 ### drop table
-# print(c.execute('drop table test66es'))
+# print(c.execute('drop table test1es'))
 
 ### desc
 # print(c.execute('desc people'))

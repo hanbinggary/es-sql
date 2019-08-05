@@ -2,9 +2,9 @@ import re
 
 from elasticsearch.helpers import scan, bulk
 
-from es_sql2.response import *
-from es_sql2.dsl import *
-from es_sql2.utils import error_handle
+from es_sql5.response import *
+from es_sql5.dsl import *
+from es_sql5.utils import error_handle
 
 
 class Request:
@@ -38,11 +38,13 @@ class Request:
             **s.offset(),
             **s.size()
         }
+
         text = es.search(
             index=s.index,
             doc_type=s.doc_type,
             body=dsl
         )
+
         resp = Response(text, aggfields, sf, cf, group, s.return_rows)
         return resp.query_result()
 
@@ -110,10 +112,10 @@ class Request:
     def delete(es, parsed):
         s = Delete(parsed)
 
-        text = es.delete(
+        text = es.delete_by_query(
             index=s.index,
             doc_type=s.doc_type,
-            id=s.id
+            body=s.query()
         )
         return text
 
@@ -192,7 +194,16 @@ class Request:
         reg = s.reg()
 
         if opt == 'tables':
-            return es.cat.indices(index=reg)
+            text = es.cat.indices(index=reg)
+            if not text:
+                return {}
+            cols = ['health', 'status',
+                    'index', 'uuid',
+                    'pri', 'rep',
+                    'docs.count', 'docs.deleted',
+                    'store.size', 'pri.store.size']
+            datas = [d.split() for d in text.strip().split('\n')]
+            return [dict(zip(cols, x)) for x in datas]
 
 
 SQLCLASS = {
