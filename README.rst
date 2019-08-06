@@ -3,7 +3,9 @@ es-sql
 
 Elasticsearch SQL
 
-es5.x
+es_sql2 => es2.x
+es_sql5 => es5.x
+es_sql6 => es6.x
 
 Installation
 ------------
