@@ -203,7 +203,16 @@ class Delete(Base):
         conditions = self.parsed['where']
         return QueryDSL(conditions).to_dict()
 
+
 class Update(Delete):
+
+    @property
+    def id(self):
+        conditions = self.parsed['where']
+        if '=' in conditions and Field(getkv(conditions['='])[0]).name == '_id':
+            return getkv(conditions['='])[1]
+        else:
+            raise Exception('只支持通过id更新文档!')
 
     def reset_value(self):
         values = {}
