@@ -1,5 +1,3 @@
-from elasticsearch.exceptions import RequestError
-
 
 class ESQLException(Exception):
     """

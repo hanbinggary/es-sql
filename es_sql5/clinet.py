@@ -1,7 +1,7 @@
-from elasticsearch import Elasticsearch
+from .elasticsearch5 import Elasticsearch
 
 from es_sqlparser import parse_handle
-from es_sql5.request import SQLCLASS
+from .request import SQLCLASS
 
 
 class Client:

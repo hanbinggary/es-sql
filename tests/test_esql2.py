@@ -19,7 +19,7 @@ c = Client('10.68.120.106:9204')
 
 
 ### select
-# print(c.execute('select _index,_type,_id,* from people'))
+print(c.execute('select _index,_type,_id,* from people'))
 # print(c.execute('select * from people.base'))
 # print(c.execute('select user,age from people.base'))
 # print(c.execute('select count(*) from people'))
@@ -73,5 +73,5 @@ c = Client('10.68.120.106:9204')
 # print(c.execute('desc people'))
 
 ### show
-print(c.execute('show tables'))
+# print(c.execute('show tables'))
 # print(c.execute('show tables like "people*"'))

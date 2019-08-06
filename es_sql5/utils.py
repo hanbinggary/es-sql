@@ -1,7 +1,7 @@
 from functools import wraps
 import json
 
-from elasticsearch.exceptions import RequestError, NotFoundError
+from .elasticsearch5.exceptions import RequestError, NotFoundError
 
 
 def getkv(d):

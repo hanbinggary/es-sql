@@ -1,5 +1,5 @@
 '''
-es5.x
+es6.x
 '''
 
-from es_sql6.clinet import Client
+from .clinet import Client

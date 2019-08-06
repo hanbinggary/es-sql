@@ -1,5 +1,5 @@
-from es_sql5.utils import getkv
-from es_sql5.model import *
+from .utils import getkv
+from .model import *
 
 
 class QueryDSL:

@@ -1,10 +1,8 @@
-import re
+from .elasticsearch5.helpers import scan, bulk
 
-from elasticsearch.helpers import scan, bulk
-
-from es_sql5.response import *
-from es_sql5.dsl import *
-from es_sql5.utils import error_handle
+from .response import *
+from .dsl import *
+from .utils import error_handle
 
 
 class Request:

@@ -7,7 +7,7 @@ c = Client('10.68.23.89:9205')
 ## create table
 # 创建索引不带doc_type时默认为people.base
 # keyword/text 默认会创建 user.raw 表示查询整词
-# print(c.execute('create table people(user keyword/text, age integer,addr text,createtime date,weight double) with 1,1'))
+# print(c.execute('create table people004(user keyword/text, age integer,addr text,createtime date,weight double) with 1,1'))
 
 
 ### insert
@@ -70,8 +70,8 @@ c = Client('10.68.23.89:9205')
 # print(c.execute('drop table test1es'))
 
 ### desc
-# print(c.execute('desc people'))
+print(c.execute('desc people002'))
 
 ### show
-print(c.execute('show tables'))
+# print(c.execute('show tables'))
 # print(c.execute('show tables like "people*"'))
