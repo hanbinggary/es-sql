@@ -1,13 +1,13 @@
-from es_sql import Client
+from es_sql6 import Client
 from es_sqlparser import do_test
 
 # do_test()
-c = Client('10.68.23.89:9205')
+c = Client('10.68.23.89:9206')
 
 ## create table
 # 创建索引不带doc_type时默认为people.base
 # keyword/text 默认会创建 user.raw 表示查询整词
-# print(c.execute('create table people(user keyword/text, age integer,addr text,createtime date,weight double) with 1,1'))
+print(c.execute('create table people(user keyword/text, age integer,addr text,createtime date,weight double) with 1,1'))
 
 
 ### insert
@@ -19,7 +19,7 @@ c = Client('10.68.23.89:9205')
 
 
 ### select
-print(c.execute('select _index,_type,_id,* from people'))
+# print(c.execute('select _index,_type,_id,* from people'))
 # print(c.execute('select * from people.base'))
 # print(c.execute('select user,age from people.base'))
 # print(c.execute('select count(*) from people'))
