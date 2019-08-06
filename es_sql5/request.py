@@ -152,7 +152,6 @@ class Request:
                 'number_of_replicas': s.replicas()
             }
         }
-
         text = es.indices.create(
             index=index,
             body=body

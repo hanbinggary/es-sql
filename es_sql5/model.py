@@ -367,7 +367,7 @@ class MappingMultiFields:
 
     @staticmethod
     def to_dict():
-        return {'fields': {'raw': {'type': 'string', 'index': 'not_analyzed'}}}
+        return {'fields': {'raw': {'type': 'keyword'}}}
 
 
 class MappingField:
@@ -383,14 +383,9 @@ class MappingField:
     def to_dict(self):
         if isinstance(self.type, list):
             mf = MappingMultiFields.to_dict()
-            return {self.name: {'type': 'string', **mf}}
+            return {self.name: {'type': 'text', **mf}}
         else:
-            if self.type == 'text':
-                return {self.name: {'type': 'string'}}
-            elif self.type == 'keyword':
-                return {self.name: {'type': 'string', 'index': 'not_analyzed'}}
-            else:
-                return {self.name: {'type': self.type}}
+            return {self.name: {'type': self.type}}
 
 
 

@@ -122,7 +122,14 @@ class MappingRes:
         for tp, properties in mappings.items():
             prop = properties['properties']
             for field, opts in prop.items():
-                field_type = 'keyword' if not opts.get('index') else 'text'
+                field_type = opts['type']
+
+                if field_type == 'string':
+                    if 'index' in opts:
+                        field_type = 'keyword'
+                    else:
+                        field_type = 'text'
+
                 if 'fields' in opts:
                     field_type = 'keyword/text'
 
