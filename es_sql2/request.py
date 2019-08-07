@@ -190,7 +190,10 @@ class Request:
         reg = s.reg()
 
         if opt == 'tables':
-            return es.cat.indices(index=reg)
+            text = es.cat.indices(index=reg)
+            if not text:
+                return []
+            return text
 
 
 SQLCLASS = {

@@ -1,13 +1,14 @@
-from es_sql5 import Client
+from es_sql1 import Client
 from es_sqlparser import do_test
 
 # do_test()
-c = Client('10.68.23.89:9205')
+c = Client('10.68.23.89:9201')
 
 ## create table
 # 创建索引不带doc_type时默认为people.base
 # keyword/text 默认会创建 user.raw 表示查询整词
-# print(c.execute('create table people004(user keyword/text, age integer,addr text,createtime date,weight double) with 1,1'))
+# print(c.execute('create table people(user keyword/text, age integer,addr text,createtime date,weight double) with 1,1'))
+# print(c.execute('create table people002(user keyword/text, age integer,addr text,createtime date,weight double) with 1,1'))
 
 
 ### insert
@@ -37,8 +38,6 @@ c = Client('10.68.23.89:9205')
 
 # print(c.execute('select age,count(*) from people group by age'))
 # print(c.execute('select user.raw,age,count(*) from people group by age,user.raw'))
-# print(c.execute('select age,count(*) from people group by age having count(*)=1'))
-# print(c.execute('select age,count(*) from people group by age having count(*)>1'))
 
 # print(c.execute('select * from people limit 1'))
 # print(c.execute('select * from people limit 1,1'))
@@ -53,7 +52,7 @@ c = Client('10.68.23.89:9205')
 #     print(i)
 # for i in c.execute('scan * from people limit 4'):
 #     print(i)
-# for i in c.execute('scan * from people where age<22'):
+# for i in c.execute('scan * from people where age<26'):
 #     print(i)
 # for i in c.execute('scan * from people order by age desc'):
 #     print(i)
@@ -67,11 +66,11 @@ c = Client('10.68.23.89:9205')
 # print(c.execute('delete from people where age=24'))
 
 ### drop table
-# print(c.execute('drop table test1es'))
+# print(c.execute('drop table people002'))
 
 ### desc
-# print(c.execute('desc people002'))
+# print(c.execute('desc people'))
 
 ### show
-print(c.execute('show tables'))
+# print(c.execute('show tables'))
 # print(c.execute('show tables like "people*"'))

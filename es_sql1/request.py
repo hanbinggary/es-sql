@@ -1,4 +1,4 @@
-from .elasticsearch6.helpers import scan, bulk
+from .elasticsearch1.helpers import scan, bulk
 
 from .response import *
 from .dsl import *
@@ -36,13 +36,11 @@ class Request:
             **s.offset(),
             **s.size()
         }
-
         text = es.search(
             index=s.index,
             doc_type=s.doc_type,
             body=dsl
         )
-
         resp = Response(text, aggfields, sf, cf, group, s.return_rows)
         return resp.query_result()
 
@@ -110,10 +108,10 @@ class Request:
     def delete(es, parsed):
         s = Delete(parsed)
 
-        text = es.delete_by_query(
+        text = es.delete(
             index=s.index,
             doc_type=s.doc_type,
-            body=s.query()
+            id=s.id
         )
         return text
 
@@ -150,6 +148,7 @@ class Request:
                 'number_of_replicas': s.replicas()
             }
         }
+
         text = es.indices.create(
             index=index,
             body=body

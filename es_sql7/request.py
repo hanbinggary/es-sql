@@ -182,7 +182,7 @@ class Request:
         if opt == 'tables':
             text = es.cat.indices(index=reg)
             if not text:
-                return {}
+                return []
             cols = ['health', 'status',
                     'index', 'uuid',
                     'pri', 'rep',
