@@ -13,7 +13,7 @@ Installation
 
     $ git clone https://github.com/yasinasama/es-sql.git
     $ cd es-sql
-    $ python setup install
+    $ python setup.py install
 
 
 Getting Started
