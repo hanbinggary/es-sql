@@ -3,10 +3,9 @@
 from setuptools import setup
 
 
-packages = ['es_sql5']
+packages = ['es_sql1', 'es_sql2', 'es_sql3', 'es_sql4', 'es_sql5']
 
 requires = [
-    'elasticsearch>=5.0.0,<6.0.0',
     'ply'
 ]
 
