@@ -173,13 +173,9 @@ class Insert(Base):
 
 class Delete(Base):
 
-    @property
-    def id(self):
+    def query(self):
         conditions = self.parsed['where']
-        if '=' in conditions and Field(getkv(conditions['='])[0]).name == '_id':
-            return getkv(conditions['='])[1]
-        else:
-            raise Exception('只支持通过id删除文档!')
+        return QueryDSL(conditions).to_dict()
 
 
 class Update(Delete):

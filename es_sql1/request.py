@@ -108,10 +108,10 @@ class Request:
     def delete(es, parsed):
         s = Delete(parsed)
 
-        text = es.delete(
+        text = es.delete_by_query(
             index=s.index,
             doc_type=s.doc_type,
-            id=s.id
+            body=s.query()
         )
         return text
 

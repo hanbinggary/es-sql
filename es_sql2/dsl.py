@@ -205,7 +205,7 @@ class Delete(Base):
         if '=' in conditions and Field(getkv(conditions['='])[0]).name == '_id':
             return getkv(conditions['='])[1]
         else:
-            raise Exception('只支持通过id删除文档!')
+            raise Exception('es2.x只支持通过id删除文档!')
 
 
 class Update(Delete):
